@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes"/>
+<meta name="theme-color" content="#07070b">
+<title>Xpressfixing — Book a Repair</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #07070b;
+  --surface: #0f1117;
+  --card: #151824;
+  --card-2: #1b1f2e;
+  --border: #262a3d;
+
+  --accent: #00ffa6;
+  --accent-2: #00cfff;
+  --accent-soft: rgba(0,255,166,0.12);
+
+  --text: #f5f7ff;
+  --muted: #9aa0c3;
+  --warning: #ffb84d;
+
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+/* ===== NAV ===== */
+nav {
+  position: fixed; top: 0; width: 100%;
+  padding: 18px 32px;
+  display: flex; justify-content: space-between; align-items: center;
+  backdrop-filter: blur(20px);
+  background: rgba(7,7,11,0.85);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  z-index: 100;
+  transition: all 0.3s ease;
+}
+.logo { 
+  font-family: 'Syne', sans-serif; 
+  font-weight: 800; 
+  font-size: 1.3rem;
+  letter-spacing: -0.5px;
+}
+.logo span { color: var(--accent); }
+
+/* ===== BUTTONS ===== */
+.btn-next, .nav-cta {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: #001b12;
+  border: none;
+  border-radius: var(--radius-sm);
+  height: 48px;
+  padding: 0 28px;
+  font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0,255,166,0.25);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-next { width: 100%; }
+.btn-next:hover, .nav-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0,255,166,0.4);
+}
+.btn-back {
+  height: 48px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  flex: 1;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+.btn-back:hover { 
+  border-color: var(--muted); 
+  color: var(--text);
+  transform: translateY(-1px);
+}
+
+/* ===== BG GLOW ===== */
+.bg-glow {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 55% 40% at 5% 15%, rgba(0,255,166,0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 45% 45% at 95% 85%, rgba(0,207,255,0.07) 0%, transparent 70%);
+}
+
+/* ===== MAIN LAYOUT ===== */
+.main-container {
+  position: relative;
+  z-index: 1;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/* ===== HERO ===== */
+.hero {
+  position: relative;
+  padding: 140px 0 80px;
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+.hero-badge {
+  display: inline-flex; 
+  align-items: center; 
+  gap: 8px;
+  background: rgba(0,255,166,0.08);
+  border: 1px solid rgba(0,255,166,0.2);
+  color: var(--accent);
+  border-radius: 100px;
+  padding: 8px 18px; 
+  font-size: 0.8rem; 
+  font-weight: 500;
+  margin-bottom: 28px; 
+  letter-spacing: 0.3px;
+}
+.dot { 
+  width: 8px; 
+  height: 8px; 
+  border-radius: 50%; 
+  background: var(--accent); 
+  animation: pulse 2s infinite; 
+}
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  line-height: 1.1;
+  letter-spacing: -2px;
+  margin-bottom: 24px;
+}
+h1 em { color: var(--accent); font-style: normal; }
+
+.hero-sub {
+  color: var(--muted);
+  margin-bottom: 48px;
+  line-height: 1.7;
+  font-size: 1.1rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero-stats { 
+  display: flex; 
+  justify-content: center;
+  gap: 48px; 
+}
+.stat {
+  text-align: center;
+}
+.stat-num { 
+  font-family: 'Syne', sans-serif; 
+  font-size: 2rem; 
+  font-weight: 800; 
+}
+.stat-label { 
+  font-size: 0.8rem; 
+  color: var(--muted); 
+  margin-top: 6px; 
+}
+
+/* ===== SECTIONS GRID ===== */
+.sections-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  margin: 60px 0;
+}
+
+/* ===== HOW IT WORKS ===== */
+.process-section, .engineers-section {
+  background: linear-gradient(145deg, rgba(21,24,40,0.5), rgba(27,31,46,0.3));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  backdrop-filter: blur(10px);
+}
+.section-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+.section-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-bottom: 24px;
+}
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.t-item {
+  display: flex;
+  gap: 16px;
+}
+.t-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.t-dot {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(0,255,166,0.1);
+  border: 2px solid var(--border);
+  flex-shrink: 0;
+  position: relative;
+}
+.t-dot.done {
+  background: rgba(0,255,166,0.2);
+  border-color: var(--accent);
+}
+.t-dot::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: none;
+}
+.t-dot.done::after {
+  display: block;
+}
+.t-line {
+  width: 2px;
+  flex: 1;
+  background: var(--border);
+  margin: 6px 0;
+  min-height: 30px;
+}
+.t-content {
+  flex: 1;
+  padding-bottom: 8px;
+}
+.t-title {
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 6px;
+}
+.t-desc {
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* ===== ENGINEERS ===== */
+.engineer-list { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 16px; 
+  margin-top: 8px;
+}
+.eng-item {
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center;
+  padding: 20px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(145deg, var(--card), var(--card-2));
+  border: 1px solid rgba(255,255,255,0.06);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.eng-item:hover { 
+  border-color: var(--accent); 
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+.eng-left { 
+  display: flex; 
+  align-items: center; 
+  gap: 16px; 
+}
+.eng-avatar {
+  width: 56px; 
+  height: 56px; 
+  border-radius: 16px;
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  font-size: 1.6rem;
+  background: rgba(0,255,166,0.1);
+  flex-shrink: 0;
+}
+.eng-name { 
+  font-weight: 700; 
+  font-size: 1rem; 
+  margin-bottom: 4px;
+}
+.eng-spec { 
+  font-size: 0.8rem; 
+  color: var(--muted); 
+}
+.eng-right { 
+  text-align: right; 
+}
+.eng-rating { 
+  font-size: 0.9rem; 
+  font-weight: 700; 
+  color: var(--warning); 
+  margin-bottom: 4px;
+}
+.eng-status { 
+  font-size: 0.75rem; 
+}
+.eng-status.online { 
+  color: var(--accent); 
+}
+.eng-status.busy { 
+  color: var(--warning); 
+}
+
+/* ===== BOOKING SECTION ===== */
+.booking-section {
+  margin: 60px auto;
+  max-width: 900px;
+}
+.booking-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+.booking-header .section-label {
+  display: inline-block;
+}
+.booking-header h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  font-weight: 800;
+  letter-spacing: -0.8px;
+  margin: 16px 0;
+}
+.booking-header p {
+  color: var(--muted);
+  font-size: 1rem;
+}
+
+.trust-items {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: rgba(0,255,166,0.03);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  color: var(--muted);
+  transition: all 0.3s ease;
+}
+.trust-item:hover {
+  border-color: rgba(0,255,166,0.3);
+  transform: translateX(4px);
+}
+.trust-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(0,255,166,0.08);
+  border: 1px solid rgba(0,255,166,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+/* ===== FORM CARD ===== */
+.form-card {
+  background: linear-gradient(145deg, var(--card), var(--card-2));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  padding: 40px;
+}
+
+.form-steps-indicator {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+.fsi {
+  flex: 1;
+  height: 4px;
+  border-radius: 4px;
+  background: var(--border);
+  transition: all 0.3s ease;
+}
+.fsi.active { 
+  background: rgba(0,255,166,0.4); 
+}
+.fsi.done { 
+  background: var(--accent); 
+}
+
+.form-step {
+  display: none;
+  flex-direction: column;
+  gap: 24px;
+  animation: fadeInUp 0.4s ease;
+}
+.form-step.active {
+  display: flex;
+}
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.step-heading {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+.step-sub {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+label {
+  font-size: 0.85rem;
+  color: var(--muted);
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+input, select, textarea {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+  transition: all 0.3s ease;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.device-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+.device-btn {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 18px 12px;
+  text-align: center;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.9rem;
+  background: var(--surface);
+  transition: all 0.3s ease;
+}
+.device-btn .d-icon {
+  display: block;
+  font-size: 1.8rem;
+  margin-bottom: 8px;
+}
+.device-btn:hover {
+  border-color: rgba(0,255,166,0.4);
+  transform: translateY(-2px);
+}
+.device-btn.selected {
+  border-color: var(--accent);
+  background: rgba(0,255,166,0.1);
+  color: var(--text);
+  box-shadow: 0 4px 14px rgba(0,255,166,0.18);
+}
+
+.issue-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+}
+.issue-btn {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px 12px;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.85rem;
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+}
+.issue-btn .i-icon {
+  font-size: 1.2rem;
+}
+.issue-btn:hover {
+  border-color: rgba(0,255,166,0.4);
+  transform: translateX(2px);
+}
+.issue-btn.selected {
+  border-color: var(--accent);
+  background: rgba(0,255,166,0.1);
+  color: var(--text);
+  box-shadow: 0 2px 8px rgba(0,255,166,0.15);
+}
+
+.btn-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  font-size: 0.9rem;
+}
+.summary-row:last-child {
+  border-bottom: none;
+}
+.summary-label {
+  color: var(--muted);
+}
+.summary-value {
+  font-weight: 500;
+  text-align: right;
+}
+
+.price-estimate {
+  background: rgba(0,255,166,0.06);
+  border: 1px solid rgba(0,255,166,0.18);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  text-align: center;
+  margin-top: 16px;
+}
+.price-range {
+  color: var(--accent);
+  font-family: 'Syne', sans-serif;
+  font-size: 2rem;
+  font-weight: 800;
+  text-shadow: 0 0 12px rgba(0,255,166,0.35);
+  margin-bottom: 8px;
+}
+.price-note {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+/* ===== TRACKING SECTION ===== */
+.tracking-section {
+  margin: 60px auto;
+  max-width: 900px;
+}
+.track-card {
+  background: linear-gradient(145deg, var(--card), var(--card-2));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  margin-top: 32px;
+}
+.track-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.track-id {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.track-id span {
+  color: var(--accent);
+  font-weight: 600;
+}
+.track-device {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-top: 6px;
+}
+.track-badge {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 6px 16px;
+  border-radius: 100px;
+  background: rgba(0,255,166,0.1);
+  border: 1px solid rgba(0,255,166,0.25);
+  color: var(--accent);
+}
+.track-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.track-item {
+  display: flex;
+  gap: 20px;
+}
+.track-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.track-dot {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  border: 2px solid var(--border);
+  background: var(--surface);
+}
+.track-dot.done {
+  background: rgba(0,255,166,0.12);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.track-dot.current {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #001b12;
+  box-shadow: 0 0 14px rgba(0,255,166,0.4);
+}
+.track-dot.pending {
+  color: var(--muted);
+}
+.track-line {
+  flex: 1;
+  width: 2px;
+  background: var(--border);
+  margin: 4px 0;
+  min-height: 24px;
+}
+.track-line.done {
+  background: rgba(0,255,166,0.3);
+}
+.track-content {
+  padding-bottom: 20px;
+  padding-top: 4px;
+}
+.track-title {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+.track-title.muted {
+  color: var(--muted);
+}
+.track-time {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+/* ===== FOOTER ===== */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 32px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  font-size: 0.85rem;
+  color: var(--muted);
+  max-width: 1400px;
+  margin: 0 auto;
+}
+.logo-sm {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+.logo-sm span {
+  color: var(--accent);
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 1024px) {
+  .sections-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .main-container {
+    padding: 0 24px;
+  }
+  .hero {
+    padding: 120px 0 60px;
+  }
+}
+
+@media (max-width: 768px) {
+  nav {
+    padding: 14px 20px;
+  }
+  .main-container {
+    padding: 0 16px;
+  }
+  .hero {
+    padding: 100px 0 40px;
+  }
+  .hero-stats {
+    gap: 32px;
+  }
+  .stat-num {
+    font-size: 1.6rem;
+  }
+  .form-card {
+    padding: 24px;
+  }
+  .device-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .issue-grid {
+    grid-template-columns: 1fr;
+  }
+  .trust-items {
+    grid-template-columns: 1fr;
+  }
+  .track-header {
+    flex-direction: column;
+  }
+  footer {
+    flex-direction: column;
+    text-align: center;
+    padding: 24px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero h1 {
+    font-size: 2rem;
+  }
+  .hero-sub {
+    font-size: 0.95rem;
+  }
+  .section-title {
+    font-size: 1.3rem;
+  }
+  .process-section, .engineers-section {
+    padding: 24px;
+  }
+  .eng-item {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+  .eng-left {
+    flex-direction: column;
+  }
+  .eng-right {
+    text-align: center;
+  }
+  .btn-row {
+    flex-direction: column;
+  }
+  .price-range {
+    font-size: 1.5rem;
+  }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--surface);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+</style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+
+<nav>
+  <div class="logo">xpress<span>fixing</span></div>
+  <button class="nav-cta" onclick="document.querySelector('.booking-section').scrollIntoView({behavior:'smooth'})">Book a Repair</button>
+</nav>
+
+<div class="main-container">
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-badge"><span class="dot"></span> Available in Lagos, Abuja & more</div>
+    <h1>Your phone fixed,<br/><em>delivered back</em><br/>to you.</h1>
+    <p class="hero-sub">Book a certified engineer, get a diagnosis, agree on price — we pick up your phone, fix it, and bring it back. No stress.</p>
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-num">500+</div>
+        <div class="stat-label">Repairs done</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">48</div>
+        <div class="stat-label">Engineers</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">4.9★</div>
+        <div class="stat-label">Avg. rating</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS & ENGINEERS GRID -->
+  <div class="sections-grid">
+    <!-- HOW IT WORKS -->
+    <div class="process-section">
+      <div class="section-label">Process</div>
+      <div class="section-title">How it works</div>
+      <div class="timeline">
+        <div class="t-item">
+          <div class="t-left"><div class="t-dot done"></div><div class="t-line"></div></div>
+          <div class="t-content">
+            <div class="t-title">Book & Describe</div>
+            <div class="t-desc">Describe your device and issue. Takes under 2 minutes.</div>
+          </div>
+        </div>
+        <div class="t-item">
+          <div class="t-left"><div class="t-dot done"></div><div class="t-line"></div></div>
+          <div class="t-content">
+            <div class="t-title">Chat & Diagnose</div>
+            <div class="t-desc">An engineer reviews your issue and gives a quote.</div>
+          </div>
+        </div>
+        <div class="t-item">
+          <div class="t-left"><div class="t-dot"></div><div class="t-line"></div></div>
+          <div class="t-content">
+            <div class="t-title">Pickup & Repair</div>
+            <div class="t-desc">We collect your device and fix it securely.</div>
+          </div>
+        </div>
+        <div class="t-item">
+          <div class="t-left"><div class="t-dot"></div></div>
+          <div class="t-content">
+            <div class="t-title">Delivered Back</div>
+            <div class="t-desc">Your fixed phone is returned to your door.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ENGINEERS -->
+    <div class="engineers-section">
+      <div class="section-label">Our Engineers</div>
+      <div class="section-title">Pick your engineer</div>
+      <div class="engineer-list">
+        <div class="eng-item">
+          <div class="eng-left">
+            <div class="eng-avatar">👨🏾‍🔧</div>
+            <div>
+              <div class="eng-name">Adebayo Suleiman</div>
+              <div class="eng-spec">iPhone Specialist</div>
+            </div>
+          </div>
+          <div class="eng-right">
+            <div class="eng-rating">4.9★</div>
+            <div class="eng-status online">● Available</div>
+          </div>
+        </div>
+        <div class="eng-item">
+          <div class="eng-left">
+            <div class="eng-avatar">👩🏽‍🔧</div>
+            <div>
+              <div class="eng-name">Chiamaka Eze</div>
+              <div class="eng-spec">Android Expert</div>
+            </div>
+          </div>
+          <div class="eng-right">
+            <div class="eng-rating">4.8★</div>
+            <div class="eng-status online">● Available</div>
+          </div>
+        </div>
+        <div class="eng-item">
+          <div class="eng-left">
+            <div class="eng-avatar">👨🏿‍🔧</div>
+            <div>
+              <div class="eng-name">Emeka Nwosu</div>
+              <div class="eng-spec">Laptop & General Repairs</div>
+            </div>
+          </div>
+          <div class="eng-right">
+            <div class="eng-rating">4.7★</div>
+            <div class="eng-status busy">● Busy</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOOKING FORM -->
+  <div class="booking-section">
+    <div class="booking-header">
+      <div class="section-label">Get Started</div>
+      <h2>Book your repair in minutes</h2>
+      <p>Fill in the details and we'll match you with the best engineer for your device and issue.</p>
+    </div>
+
+    <div class="trust-items">
+      <div class="trust-item"><div class="trust-icon">🔒</div>Secure payment via Paystack — you pay us, not the engineer</div>
+      <div class="trust-item"><div class="trust-icon">⚡</div>Engineer responds within 30 minutes</div>
+      <div class="trust-item"><div class="trust-icon">🛡️</div>All repairs come with a 14-day fix guarantee</div>
+      <div class="trust-item"><div class="trust-icon">📍</div>Dispatch pickup within 1 hour of confirmation</div>
+    </div>
+
+    <div class="form-card">
+      <!-- Progress -->
+      <div class="form-steps-indicator">
+        <div class="fsi done" id="fsi1"></div>
+        <div class="fsi" id="fsi2"></div>
+        <div class="fsi" id="fsi3"></div>
+        <div class="fsi" id="fsi4"></div>
+      </div>
+
+      <!-- Step 1: Device -->
+      <div class="form-step active" id="step1">
+        <div>
+          <div class="step-heading">What device needs fixing?</div>
+          <div class="step-sub">Step 1 of 4</div>
+        </div>
+        <div>
+          <label>Select device type</label>
+          <div class="device-grid">
+            <div class="device-btn" onclick="selectDevice(this,'iPhone')"><span class="d-icon">🍎</span>iPhone</div>
+            <div class="device-btn" onclick="selectDevice(this,'Android')"><span class="d-icon">🤖</span>Android</div>
+            <div class="device-btn" onclick="selectDevice(this,'iPad')"><span class="d-icon">📟</span>iPad/Tablet</div>
+            <div class="device-btn" onclick="selectDevice(this,'Laptop')"><span class="d-icon">💻</span>Laptop</div>
+            <div class="device-btn" onclick="selectDevice(this,'Smartwatch')"><span class="d-icon">⌚</span>Smartwatch</div>
+            <div class="device-btn" onclick="selectDevice(this,'Other')"><span class="d-icon">🔧</span>Other</div>
+          </div>
+        </div>
+        <div>
+          <label>Device brand & model</label>
+          <input type="text" id="deviceModel" placeholder="e.g. iPhone 13 Pro, Samsung A53…" />
+        </div>
+        <div class="btn-row">
+          <button class="btn-next" onclick="nextStep(1)">Continue →</button>
+        </div>
+      </div>
+
+      <!-- Step 2: Issue -->
+      <div class="form-step" id="step2">
+        <div>
+          <div class="step-heading">What's the issue?</div>
+          <div class="step-sub">Step 2 of 4 — select all that apply</div>
+        </div>
+        <div>
+          <div class="issue-grid">
+            <div class="issue-btn" onclick="toggleIssue(this)"><span class="i-icon">💔</span>Broken screen</div>
+            <div class="issue-btn" onclick="toggleIssue(this)"><span class="i-icon">🔋</span>Battery issues</div>
+            <div class="issue-btn" onclick="toggleIssue(this)"><span class="i-icon">💧</span>Water damage</div>
+            <div class="issue-btn" onclick="toggleIssue(this)"><span class="i-icon">📷</span>Camera problem</div>
+            <div class="issue-btn" onclick="toggleIssue(this)"><span class="i-icon">🔇</span>Speaker/mic</div>
+            <div class="issue-btn" onclick="toggleIssue(this)"><span class="i-icon">⚙️</span>Software issue</div>
+            <div class="issue-btn" onclick="toggleIssue(this)"><span class="i-icon">🔌</span>Charging port</div>
+            <div class="issue-btn" onclick="toggleIssue(this)"><span class="i-icon">❓</span>Other</div>
+          </div>
+        </div>
+        <div>
+          <label>Describe the problem in more detail (optional)</label>
+          <textarea id="issueDesc" placeholder="e.g. Screen cracked after a fall, touch still works but there's a crack across the corner…"></textarea>
+        </div>
+        <div class="btn-row">
+          <button class="btn-back" onclick="prevStep(2)">← Back</button>
+          <button class="btn-next" onclick="nextStep(2)">Continue →</button>
+        </div>
+      </div>
+
+      <!-- Step 3: Personal details -->
+      <div class="form-step" id="step3">
+        <div>
+          <div class="step-heading">Your details</div>
+          <div class="step-sub">Step 3 of 4</div>
+        </div>
+        <div>
+          <label>Full name</label>
+          <input type="text" id="custName" placeholder="e.g. Chidi Okonkwo" />
+        </div>
+        <div>
+          <label>Phone number</label>
+          <input type="tel" id="custPhone" placeholder="e.g. 0812 345 6789" />
+        </div>
+        <div>
+          <label>Pickup address</label>
+          <input type="text" id="custAddress" placeholder="Full address for dispatch pickup" />
+        </div>
+        <div>
+          <label>Preferred pickup time</label>
+          <select id="pickupTime">
+            <option value="">Select a time slot</option>
+            <option>ASAP (within 1 hour)</option>
+            <option>Morning (8am – 12pm)</option>
+            <option>Afternoon (12pm – 4pm)</option>
+            <option>Evening (4pm – 7pm)</option>
+          </select>
+        </div>
+        <div class="btn-row">
+          <button class="btn-back" onclick="prevStep(3)">← Back</button>
+          <button class="btn-next" onclick="nextStep(3)">Continue →</button>
+        </div>
+      </div>
+
+      <!-- Step 4: Review & Submit -->
+      <div class="form-step" id="step4">
+        <div>
+          <div class="step-heading">Review your booking</div>
+          <div class="step-sub">Step 4 of 4</div>
+        </div>
+        <div id="summary">
+          <div class="summary-row"><span class="summary-label">Device</span><span class="summary-value" id="sum-device">—</span></div>
+          <div class="summary-row"><span class="summary-label">Issues</span><span class="summary-value" id="sum-issues">—</span></div>
+          <div class="summary-row"><span class="summary-label">Pickup</span><span class="summary-value" id="sum-address">—</span></div>
+          <div class="summary-row"><span class="summary-label">Time slot</span><span class="summary-value" id="sum-time">—</span></div>
+        </div>
+        <div class="price-estimate">
+          <div style="font-size:0.8rem;color:var(--muted);margin-bottom:8px;">Estimated repair cost</div>
+          <div class="price-range" id="price-range">₦8,000 – ₦25,000</div>
+          <div class="price-note">Final price agreed with your engineer via chat before payment</div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-back" onclick="prevStep(4)">← Back</button>
+          <button class="btn-next" onclick="submitBooking()">🔒 Confirm Booking</button>
+        </div>
+      </div>
+
+      <!-- Step 5: Success -->
+      <div class="form-step" id="step5" style="text-align:center;padding:20px 0;align-items:center;">
+        <div style="font-size:3rem;">🎉</div>
+        <div class="step-heading" style="margin-top:12px;">Booking Confirmed!</div>
+        <div style="color:var(--muted);font-size:0.9rem;margin-top:8px;line-height:1.7;">Your booking ID is <strong style="color:var(--accent)">XF-2024-0847</strong>.<br/>An engineer will message you within 30 minutes.</div>
+        <div style="width:100%;margin-top:20px;padding:16px;background:var(--surface);border-radius:12px;font-size:0.85rem;color:var(--muted);border:1px solid var(--border);">📱 Check your phone for an SMS confirmation</div>
+        <button class="btn-next" style="margin-top:20px;max-width:240px;" onclick="resetForm()">Track My Repair</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRACKING -->
+  <div class="tracking-section">
+    <div class="section-label">Live Tracking</div>
+    <div class="section-title">Know exactly where your phone is</div>
+    <p style="color:var(--muted);line-height:1.7;font-size:0.95rem;">From the moment dispatch picks up your device, you get real-time updates at every stage of the repair journey.</p>
+
+    <div class="track-card">
+      <div class="track-header">
+        <div>
+          <div class="track-id">Booking <span>#XF-2024-0831</span></div>
+          <div class="track-device">Samsung Galaxy S22</div>
+        </div>
+        <div class="track-badge">In Repair</div>
+      </div>
+      <div class="track-timeline">
+        <div class="track-item">
+          <div class="track-left"><div class="track-dot done">✓</div><div class="track-line done"></div></div>
+          <div class="track-content"><div class="track-title">Booking confirmed</div><div class="track-time">Today, 9:12 AM</div></div>
+        </div>
+        <div class="track-item">
+          <div class="track-left"><div class="track-dot done">✓</div><div class="track-line done"></div></div>
+          <div class="track-content"><div class="track-title">Engineer matched — Chiamaka E.</div><div class="track-time">Today, 9:34 AM</div></div>
+        </div>
+        <div class="track-item">
+          <div class="track-left"><div class="track-dot done">✓</div><div class="track-line done"></div></div>
+          <div class="track-content"><div class="track-title">Price agreed & payment received</div><div class="track-time">Today, 10:01 AM</div></div>
+        </div>
+        <div class="track-item">
+          <div class="track-left"><div class="track-dot done">✓</div><div class="track-line done"></div></div>
+          <div class="track-content"><div class="track-title">Dispatch picked up your device</div><div class="track-time">Today, 10:45 AM</div></div>
+        </div>
+        <div class="track-item">
+          <div class="track-left"><div class="track-dot current">🔧</div><div class="track-line"></div></div>
+          <div class="track-content"><div class="track-title">Engineer is repairing your phone</div><div class="track-time">In progress…</div></div>
+        </div>
+        <div class="track-item">
+          <div class="track-left"><div class="track-dot pending">🚚</div><div class="track-line"></div></div>
+          <div class="track-content"><div class="track-title muted">Dispatch delivering back to you</div><div class="track-time" style="color:var(--border)">Pending</div></div>
+        </div>
+        <div class="track-item">
+          <div class="track-left"><div class="track-dot pending">🎉</div></div>
+          <div class="track-content"><div class="track-title muted">Delivered & confirmed</div><div class="track-time" style="color:var(--border)">Pending</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="logo-sm">xpress<span>fixing</span></div>
+  <div>© 2025 Xpressfixing. All rights reserved.</div>
+  <div>Lagos · Abuja · Port Harcourt</div>
+</footer>
+
+<script>
+  let selectedDevice = '';
+  let selectedIssues = [];
+  let currentStep = 1;
+// Add this at the very top of your existing booking app
+(function() {
+  const user = localStorage.getItem('xpressfixing_current_user');
+  if (!user) {
+    window.location.href = 'login.html';
+    return;
+  }
+  const userData = JSON.parse(user);
+  if (userData.role !== 'customer') {
+    window.location.href = 'login.html';
+    return;
+  }
+  
+  // Display user name
+  document.addEventListener('DOMContentLoaded', function() {
+    const welcomeElement = document.querySelector('.hero h1');
+    if (welcomeElement) {
+      const hour = new Date().getHours();
+      const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+      welcomeElement.innerHTML = `${greeting}, ${userData.name.split(' ')[0]}! 👋`;
+    }
+  });
+})();
+  function selectDevice(el, device) {
+    document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedDevice = device;
+  }
+
+  function toggleIssue(el) {
+    el.classList.toggle('selected');
+    const label = el.textContent.trim();
+    if (el.classList.contains('selected')) {
+      selectedIssues.push(label);
+    } else {
+      selectedIssues = selectedIssues.filter(i => i !== label);
+    }
+  }
+
+  function updateIndicators(step) {
+    for (let i = 1; i <= 4; i++) {
+      const el = document.getElementById('fsi' + i);
+      el.classList.remove('active', 'done');
+      if (i < step) el.classList.add('done');
+      else if (i === step) el.classList.add('active');
+    }
+  }
+
+  function showStep(n) {
+    document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
+    document.getElementById('step' + n).classList.add('active');
+    currentStep = n;
+    updateIndicators(n);
+  }
+
+  function nextStep(from) {
+    if (from === 1 && !selectedDevice) {
+      alert('Please select a device type first.');
+      return;
+    }
+    if (from === 3) fillSummary();
+    showStep(from + 1);
+  }
+
+  function prevStep(from) { 
+    showStep(from - 1); 
+  }
+
+  function fillSummary() {
+    const model = document.getElementById('deviceModel').value || selectedDevice;
+    document.getElementById('sum-device').textContent = selectedDevice + (model ? ' — ' + model : '');
+    document.getElementById('sum-issues').textContent = selectedIssues.length ? selectedIssues.join(', ') : 'Not specified';
+    document.getElementById('sum-address').textContent = document.getElementById('custAddress').value || '—';
+    document.getElementById('sum-time').textContent = document.getElementById('pickupTime').value || '—';
+    const hasBig = selectedIssues.some(i => ['Broken','Water','Motherboard'].some(k => i.includes(k)));
+    document.getElementById('price-range').textContent = hasBig ? '₦15,000 – ₦60,000' : '₦5,000 – ₦20,000';
+  }
+
+  function submitBooking() {
+    showStep(5);
+    ['fsi1','fsi2','fsi3','fsi4'].forEach(id => {
+      const el = document.getElementById(id);
+      el.classList.remove('active');
+      el.classList.add('done');
+    });
+  }
+
+  function resetForm() {
+    selectedDevice = '';
+    selectedIssues = [];
+    showStep(1);
+    document.querySelectorAll('.device-btn, .issue-btn').forEach(b => b.classList.remove('selected'));
+    document.querySelectorAll('input, select, textarea').forEach(el => el.value = '');
+  }
+
+  updateIndicators(1);
+</script>
+</body>
+</html>

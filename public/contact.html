@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact Us — Xpressfixing</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #07070b;
+  --surface: #0f1117;
+  --card: #151824;
+  --card-2: #1b1f2e;
+  --border: #262a3d;
+  --accent: #00ffa6;
+  --accent-2: #00cfff;
+  --accent-soft: rgba(0,255,166,0.12);
+  --text: #f5f7ff;
+  --muted: #9aa0c3;
+  --danger: #ff6b6b;
+  --success: #00d4aa;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  overflow-x: hidden;
+}
+
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 20px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  backdrop-filter: blur(20px);
+  background: rgba(7,7,11,0.85);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  z-index: 1000;
+}
+
+.logo {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.logo span {
+  color: var(--accent);
+}
+
+.nav-links {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+}
+
+.nav-links a {
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.3s ease;
+  font-weight: 500;
+}
+
+.nav-links a:hover, .nav-links a.active {
+  color: var(--accent);
+}
+
+.btn-outline {
+  padding: 10px 24px;
+  border: 1px solid var(--accent);
+  border-radius: 100px;
+  color: var(--accent);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+}
+
+.btn-outline:hover {
+  background: var(--accent);
+  color: #001b12;
+  transform: translateY(-2px);
+}
+
+.btn-primary {
+  padding: 10px 28px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  border: none;
+  border-radius: 100px;
+  color: #001b12;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,255,166,0.3);
+}
+
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.hero {
+  padding: 120px 32px 60px;
+  text-align: center;
+  background: radial-gradient(ellipse at 20% 30%, rgba(0,255,166,0.05) 0%, transparent 70%);
+}
+
+.hero h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(2rem, 5vw, 3rem);
+  margin-bottom: 20px;
+}
+
+.hero h1 span {
+  color: var(--accent);
+}
+
+.hero p {
+  color: var(--muted);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 60px 32px;
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+}
+
+.contact-info {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 32px;
+}
+
+.info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 32px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+}
+
+.info-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.info-icon {
+  width: 48px;
+  height: 48px;
+  background: var(--accent-soft);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.info-content h3 {
+  margin-bottom: 8px;
+  font-size: 1.1rem;
+}
+
+.info-content p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.info-content a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.info-content a:hover {
+  text-decoration: underline;
+}
+
+.contact-form {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 32px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  font-family: 'DM Sans', sans-serif;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  border: none;
+  border-radius: 12px;
+  color: #001b12;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 8px;
+}
+
+.submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,255,166,0.3);
+}
+
+.faq-section {
+  margin-top: 80px;
+}
+
+.faq-section h2 {
+  text-align: center;
+  margin-bottom: 40px;
+  font-family: 'Syne', sans-serif;
+  font-size: 2rem;
+}
+
+.faq-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 24px;
+}
+
+.faq-item {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.faq-question {
+  font-weight: 700;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.faq-question::before {
+  content: "Q:";
+  color: var(--accent);
+  font-weight: 800;
+}
+
+.faq-answer {
+  color: var(--muted);
+  line-height: 1.6;
+  padding-left: 24px;
+}
+
+.map-section {
+  margin-top: 60px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  overflow: hidden;
+}
+
+.map-placeholder {
+  background: var(--surface);
+  padding: 60px;
+  text-align: center;
+  color: var(--muted);
+}
+
+footer {
+  border-top: 1px solid var(--border);
+  padding: 48px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-links {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.footer-links a {
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+  color: var(--accent);
+}
+
+.copyright {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.success-message {
+  background: rgba(0,212,170,0.1);
+  border: 1px solid var(--success);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 20px;
+  color: var(--success);
+  font-size: 0.85rem;
+  display: none;
+}
+
+.error-message {
+  background: rgba(255,107,107,0.1);
+  border: 1px solid var(--danger);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 20px;
+  color: var(--danger);
+  font-size: 0.85rem;
+  display: none;
+}
+
+.toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent);
+  color: #001b12;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  z-index: 1000;
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 16px 20px;
+  }
+  
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: 70px;
+    left: 0;
+    right: 0;
+    background: var(--surface);
+    flex-direction: column;
+    padding: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  
+  .nav-links.active {
+    display: flex;
+  }
+  
+  .mobile-menu-btn {
+    display: block;
+  }
+  
+  .contact-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  
+  .content {
+    padding: 40px 20px;
+  }
+  
+  .faq-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  footer {
+    flex-direction: column;
+    text-align: center;
+    padding: 32px 20px;
+  }
+  
+  .footer-links {
+    justify-content: center;
+  }
+}
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="logo" onclick="window.location.href='index.html'">xpress<span>fixing</span></div>
+  <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+  <div class="nav-links" id="navLinks">
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="services.html">Services</a>
+    <a href="contact.html" class="active">Contact</a>
+    <button class="btn-outline" onclick="window.location.href='../customer-app/login.html'">Sign In</button>
+    <button class="btn-primary" onclick="window.location.href='../customer-app/signup.html'">Book a Repair →</button>
+  </div>
+</nav>
+
+<main>
+  <section class="hero">
+    <h1>Get in <span>Touch</span></h1>
+    <p>Have questions? Need help? We're here for you 24/7</p>
+  </section>
+
+  <div class="content">
+    <div class="contact-grid">
+      <div class="contact-info">
+        <div class="info-item">
+          <div class="info-icon">📍</div>
+          <div class="info-content">
+            <h3>Our Location</h3>
+            <p>Xpressfixing HQ<br/>14 Adeola Odeku Street, Victoria Island<br/>Lagos, Nigeria</p>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="info-icon">📞</div>
+          <div class="info-content">
+            <h3>Phone & WhatsApp</h3>
+            <p><a href="tel:+2348123456789">+234 812 345 6789</a><br/>
+            <a href="https://wa.me/2348123456789">Chat on WhatsApp →</a></p>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="info-icon">✉️</div>
+          <div class="info-content">
+            <h3>Email</h3>
+            <p><a href="mailto:hello@xpressfixing.com">hello@xpressfixing.com</a><br/>
+            <a href="mailto:support@xpressfixing.com">support@xpressfixing.com</a></p>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="info-icon">⏰</div>
+          <div class="info-content">
+            <h3>Support Hours</h3>
+            <p>Monday - Friday: 8am - 8pm<br/>
+            Saturday: 9am - 6pm<br/>
+            Sunday: 10am - 4pm</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="contact-form">
+        <h3 style="margin-bottom: 24px;">Send us a message</h3>
+        <div id="form-success" class="success-message"></div>
+        <div id="form-error" class="error-message"></div>
+        
+        <div class="form-group">
+          <label>Your Name</label>
+          <input type="text" id="contact-name" placeholder="John Doe">
+        </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="contact-email" placeholder="john@example.com">
+        </div>
+        <div class="form-group">
+          <label>Subject</label>
+          <select id="contact-subject">
+            <option>General Inquiry</option>
+            <option>Repair Question</option>
+            <option>Become an Engineer</option>
+            <option>Partnership</option>
+            <option>Complaint</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Message</label>
+          <textarea id="contact-message" placeholder="How can we help you?"></textarea>
+        </div>
+        <button class="submit-btn" onclick="submitContact()">Send Message →</button>
+      </div>
+    </div>
+
+    <div class="faq-section">
+      <h2>Frequently Asked Questions</h2>
+      <div class="faq-grid">
+        <div class="faq-item">
+          <div class="faq-question">How long does a repair take?</div>
+          <div class="faq-answer">Most repairs are completed within 24 hours. Express service is available for same-day repairs for an additional fee.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">Do you offer a warranty?</div>
+          <div class="faq-answer">Yes! All repairs come with a 14-day warranty. If anything goes wrong, we'll fix it for free.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">How do I pay?</div>
+          <div class="faq-answer">We accept card payments, bank transfers, and Paystack. Payment is made after you approve the engineer's quote.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">Do you pick up and deliver?</div>
+          <div class="faq-answer">Yes! Our dispatch team picks up your device and delivers it back once repaired. Delivery is free within our service areas.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="map-section">
+      <div class="map-placeholder">
+        🗺️ Service Areas: Lagos (Lekki, VI, Ikeja, Surulere), Abuja (Wuse, Garki, Maitama), Port Harcourt (GRA, Rumuokoro)
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="logo" onclick="window.location.href='index.html'">xpress<span>fixing</span></div>
+  <div class="footer-links">
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="services.html">Services</a>
+    <a href="contact.html">Contact</a>
+    <a href="../customer-app/login.html">Sign In</a>
+  </div>
+  <div class="copyright">© 2025 Xpressfixing. All rights reserved.</div>
+</footer>
+
+<div id="toast" class="toast"></div>
+
+<script>
+function toggleMobileMenu() {
+  document.getElementById('navLinks').classList.toggle('active');
+}
+
+function showToast(message) {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.style.display = 'block';
+  setTimeout(() => {
+    toast.style.display = 'none';
+  }, 3000);
+}
+
+function submitContact() {
+  const name = document.getElementById('contact-name').value.trim();
+  const email = document.getElementById('contact-email').value.trim();
+  const subject = document.getElementById('contact-subject').value;
+  const message = document.getElementById('contact-message').value.trim();
+  
+  if (!name || !email || !message) {
+    const errorDiv = document.getElementById('form-error');
+    errorDiv.textContent = 'Please fill in all required fields';
+    errorDiv.style.display = 'block';
+    setTimeout(() => {
+      errorDiv.style.display = 'none';
+    }, 3000);
+    return;
+  }
+  
+  const successDiv = document.getElementById('form-success');
+  successDiv.textContent = 'Message sent! We\'ll get back to you within 24 hours.';
+  successDiv.style.display = 'block';
+  
+  document.getElementById('contact-name').value = '';
+  document.getElementById('contact-email').value = '';
+  document.getElementById('contact-message').value = '';
+  
+  setTimeout(() => {
+    successDiv.style.display = 'none';
+  }, 3000);
+  
+  showToast('Thank you for reaching out!');
+}
+</script>
+</body>
+</html>
