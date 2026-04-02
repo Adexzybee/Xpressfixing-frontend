@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-<title>Xpressfixing — Customer Login</title>
+<title>Sign In — Xpressfixing</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
 <style>
 :root {
@@ -35,13 +35,26 @@ body {
   align-items: center;
   justify-content: center;
   padding: 20px;
-  position: relative;
 }
 
 .container {
   width: 100%;
   max-width: 480px;
   margin: 0 auto;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  text-decoration: none;
+  margin-bottom: 24px;
+  transition: color 0.3s ease;
+}
+
+.back-link:hover {
+  color: var(--accent);
 }
 
 .logo {
@@ -62,63 +75,11 @@ body {
   margin-top: 4px;
 }
 
-.brand-badge {
-  background: var(--accent-soft);
-  border: 1px solid rgba(0,255,166,0.2);
-  border-radius: 100px;
-  padding: 6px 14px;
-  font-size: 0.7rem;
-  color: var(--accent);
-  display: inline-block;
-  margin-bottom: 20px;
-}
-
 .auth-card {
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: 24px;
   padding: 32px;
-  backdrop-filter: blur(10px);
-}
-
-.tabs {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 28px;
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 12px;
-}
-
-.tab {
-  flex: 1;
-  padding: 10px;
-  background: transparent;
-  border: none;
-  color: var(--muted);
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border-radius: 8px;
-}
-
-.tab.active {
-  color: var(--accent);
-  background: var(--accent-soft);
-}
-
-.form-panel {
-  display: none;
-  animation: fadeIn 0.3s ease;
-}
-
-.form-panel.active {
-  display: block;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 
 .input-group {
@@ -180,6 +141,9 @@ input:focus {
   cursor: pointer;
   transition: all 0.3s ease;
   margin-top: 12px;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
 }
 
 .btn-secondary:hover {
@@ -224,17 +188,6 @@ input:focus {
   display: none;
 }
 
-.success-message {
-  background: rgba(0,212,170,0.1);
-  border: 1px solid var(--success);
-  border-radius: 12px;
-  padding: 12px;
-  margin-bottom: 20px;
-  color: var(--success);
-  font-size: 0.85rem;
-  display: none;
-}
-
 .toast {
   position: fixed;
   bottom: 30px;
@@ -249,6 +202,21 @@ input:focus {
   display: none;
 }
 
+.forgot-password {
+  text-align: right;
+  margin-top: 8px;
+}
+
+.forgot-password a {
+  color: var(--muted);
+  font-size: 0.75rem;
+  text-decoration: none;
+}
+
+.forgot-password a:hover {
+  color: var(--accent);
+}
+
 @media (max-width: 480px) {
   .auth-card {
     padding: 24px;
@@ -258,127 +226,47 @@ input:focus {
 </head>
 <body>
 <div class="container">
+  <a href="../public/index.html" class="back-link">← Back to Home</a>
+  
   <div class="logo">
     xpress<span>fixing</span>
-    <div class="logo-sub">Book a Repair</div>
+    <div class="logo-sub">Welcome back</div>
   </div>
 
   <div class="auth-card">
-    <div style="text-align: center;">
-      <div class="brand-badge">🔧 For Customers</div>
+    <div id="login-error" class="error-message"></div>
+    
+    <div class="input-group">
+      <label>Email Address</label>
+      <input type="email" id="login-email" placeholder="customer@xpressfixing.com">
     </div>
-
-    <div class="tabs">
-      <button class="tab active" onclick="switchTab('login')">Sign In</button>
-      <button class="tab" onclick="switchTab('signup')">Create Account</button>
+    
+    <div class="input-group">
+      <label>Password</label>
+      <input type="password" id="login-password" placeholder="••••••••">
     </div>
-
-    <div class="form-panel active" id="login-panel">
-      <div id="login-error" class="error-message"></div>
-      
-      <div class="input-group">
-        <label>Email Address</label>
-        <input type="email" id="login-email" placeholder="customer@xpressfixing.com">
-      </div>
-      
-      <div class="input-group">
-        <label>Password</label>
-        <input type="password" id="login-password" placeholder="••••••••">
-      </div>
-      
-      <button class="btn-primary" onclick="handleLogin()">Book a Repair →</button>
-      
-      <div class="divider">
-        <span>New to Xpressfixing?</span>
-      </div>
-      
-      <button class="btn-secondary" onclick="switchTab('signup')">Create Customer Account</button>
+    
+    <div class="forgot-password">
+      <a href="#">Forgot Password?</a>
     </div>
-
-    <div class="form-panel" id="signup-panel">
-      <div id="signup-error" class="error-message"></div>
-      <div id="signup-success" class="success-message"></div>
-      
-      <div class="input-group">
-        <label>Full Name</label>
-        <input type="text" id="signup-name" placeholder="John Doe">
-      </div>
-      
-      <div class="input-group">
-        <label>Email Address</label>
-        <input type="email" id="signup-email" placeholder="john@example.com">
-      </div>
-      
-      <div class="input-group">
-        <label>Phone Number</label>
-        <input type="tel" id="signup-phone" placeholder="0812 345 6789">
-      </div>
-      
-      <div class="input-group">
-        <label>Password</label>
-        <input type="password" id="signup-password" placeholder="Create a strong password">
-      </div>
-      
-      <div class="input-group">
-        <label>Confirm Password</label>
-        <input type="password" id="signup-confirm" placeholder="Confirm your password">
-      </div>
-      
-      <button class="btn-primary" onclick="handleSignup()">Create Account →</button>
-      
-      <div class="divider">
-        <span>Already have an account?</span>
-      </div>
-      
-      <button class="btn-secondary" onclick="switchTab('login')">Sign In Instead</button>
+    
+    <button class="btn-primary" onclick="handleLogin()">Sign In →</button>
+    
+    <div class="divider">
+      <span>New to Xpressfixing?</span>
     </div>
+    
+    <a href="signup.html" class="btn-secondary">Create Account</a>
   </div>
 </div>
 
 <div id="toast" class="toast"></div>
 
 <script>
-let users = JSON.parse(localStorage.getItem('xpressfixing_users')) || [];
+const API_URL = 'http://localhost:3000/api';
 
-const demoCustomer = {
-  id: 1,
-  name: 'Demo Customer',
-  email: 'customer@xpressfixing.com',
-  phone: '0812 345 6789',
-  password: 'demo123',
-  role: 'customer',
-  createdAt: new Date().toISOString(),
-  status: 'active'
-};
-
-if (!users.find(u => u.email === demoCustomer.email)) {
-  users.push(demoCustomer);
-}
-localStorage.setItem('xpressfixing_users', JSON.stringify(users));
-
-function switchTab(tab) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.form-panel').forEach(p => p.classList.remove('active'));
-  
-  if (tab === 'login') {
-    document.querySelector('.tab:first-child').classList.add('active');
-    document.getElementById('login-panel').classList.add('active');
-  } else {
-    document.querySelector('.tab:last-child').classList.add('active');
-    document.getElementById('signup-panel').classList.add('active');
-  }
-  
-  hideErrors();
-}
-
-function hideErrors() {
-  document.getElementById('login-error').style.display = 'none';
-  document.getElementById('signup-error').style.display = 'none';
-  document.getElementById('signup-success').style.display = 'none';
-}
-
-function showError(element, message) {
-  const errorDiv = document.getElementById(element);
+function showError(message) {
+  const errorDiv = document.getElementById('login-error');
   errorDiv.textContent = message;
   errorDiv.style.display = 'block';
   setTimeout(() => {
@@ -395,105 +283,59 @@ function showToast(message) {
   }, 3000);
 }
 
-function handleLogin() {
+async function handleLogin() {
   const email = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-password').value;
   
   if (!email || !password) {
-    showError('login-error', 'Please fill in all fields');
+    showError('Please fill in all fields');
     return;
   }
   
-  const user = users.find(u => u.email === email && u.password === password);
-  
-  if (!user) {
-    showError('login-error', 'Invalid email or password');
-    return;
+  try {
+    console.log('🔄 Sending login request...');
+    
+    const response = await fetch(`${API_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    
+    const data = await response.json();
+    console.log('📥 Response:', data);
+    
+    if (data.success) {
+      // Check if user is customer
+      if (data.user.role !== 'customer') {
+        showError('This account is not a customer account. Please use the correct portal.');
+        return;
+      }
+      
+      // Save user to localStorage
+      localStorage.setItem('xpressfixing_current_user', JSON.stringify(data.user));
+      showToast(`Welcome back, ${data.user.name}!`);
+      
+      setTimeout(() => {
+        window.location.href = 'dashboard.html';
+      }, 1000);
+    } else {
+      showError(data.error || 'Invalid email or password');
+    }
+  } catch (error) {
+    console.error('❌ Error:', error);
+    showError('Cannot connect to server. Make sure backend is running on port 3000');
   }
-  
-  if (user.role !== 'customer') {
-    showError('login-error', 'This account is not a customer account.');
-    return;
-  }
-  
-  localStorage.setItem('xpressfixing_current_user', JSON.stringify(user));
-  showToast(`Welcome back, ${user.name}!`);
-  
-  setTimeout(() => {
-    window.location.href = 'booking-app.html';
-  }, 1000);
 }
 
-function handleSignup() {
-  const name = document.getElementById('signup-name').value.trim();
-  const email = document.getElementById('signup-email').value.trim();
-  const phone = document.getElementById('signup-phone').value.trim();
-  const password = document.getElementById('signup-password').value;
-  const confirm = document.getElementById('signup-confirm').value;
-  
-  if (!name || !email || !phone || !password || !confirm) {
-    showError('signup-error', 'Please fill in all fields');
-    return;
-  }
-  
-  if (password !== confirm) {
-    showError('signup-error', 'Passwords do not match');
-    return;
-  }
-  
-  if (password.length < 6) {
-    showError('signup-error', 'Password must be at least 6 characters');
-    return;
-  }
-  
-  if (users.find(u => u.email === email)) {
-    showError('signup-error', 'Email already registered');
-    return;
-  }
-  
-  const newUser = {
-    id: Date.now(),
-    name,
-    email,
-    phone,
-    password,
-    role: 'customer',
-    createdAt: new Date().toISOString(),
-    status: 'active'
-  };
-  
-  users.push(newUser);
-  localStorage.setItem('xpressfixing_users', JSON.stringify(users));
-  
-  document.getElementById('signup-success').textContent = 'Account created! Redirecting to login...';
-  document.getElementById('signup-success').style.display = 'block';
-  
-  document.getElementById('signup-name').value = '';
-  document.getElementById('signup-email').value = '';
-  document.getElementById('signup-phone').value = '';
-  document.getElementById('signup-password').value = '';
-  document.getElementById('signup-confirm').value = '';
-  
-  setTimeout(() => {
-    switchTab('login');
-    document.getElementById('signup-success').style.display = 'none';
-    showToast('Account created! Please sign in');
-  }, 2000);
-}
-
+// Demo account helper (optional)
 function autoFillDemo() {
   document.getElementById('login-email').value = 'customer@xpressfixing.com';
   document.getElementById('login-password').value = 'demo123';
 }
 
+// Add demo hint
 const demoHint = document.createElement('div');
-demoHint.style.cssText = `
-  text-align: center;
-  margin-top: 16px;
-  color: var(--muted);
-  font-size: 0.75rem;
-  cursor: pointer;
-`;
+demoHint.style.cssText = 'text-align: center; margin-top: 16px; color: var(--muted); font-size: 0.75rem; cursor: pointer;';
 demoHint.innerHTML = '🔑 Demo: <span onclick="autoFillDemo()">customer@xpressfixing.com / demo123</span>';
 document.querySelector('.container').appendChild(demoHint);
 </script>

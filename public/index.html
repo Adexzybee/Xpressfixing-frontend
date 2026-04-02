@@ -67,6 +67,7 @@ body {
   display: flex;
   gap: 32px;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .nav-links a {
@@ -111,6 +112,23 @@ body {
 .btn-primary:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(0,255,166,0.3);
+}
+
+.btn-engineer {
+  padding: 10px 24px;
+  border: 1px solid var(--warning);
+  border-radius: 100px;
+  color: var(--warning);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+}
+
+.btn-engineer:hover {
+  background: var(--warning);
+  color: #001b12;
+  transform: translateY(-2px);
 }
 
 .mobile-menu-btn {
@@ -166,6 +184,7 @@ body {
   justify-content: center;
   gap: 48px;
   margin-top: 48px;
+  flex-wrap: wrap;
 }
 
 .stat {
@@ -296,6 +315,136 @@ body {
   line-height: 1.6;
 }
 
+/* Engineer Section */
+.engineer-section {
+  padding: 80px 32px;
+  background: linear-gradient(135deg, rgba(255,184,77,0.05) 0%, transparent 100%);
+}
+
+.engineer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.engineer-content h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.engineer-content h2 span {
+  color: var(--warning);
+}
+
+.engineer-content p {
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+
+.engineer-benefits {
+  margin: 24px 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.benefit-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.benefit-item::before {
+  content: "✓";
+  color: var(--warning);
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.engineer-buttons {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+
+.btn-warning {
+  padding: 12px 32px;
+  background: linear-gradient(135deg, var(--warning), #ff9f4a);
+  border: none;
+  border-radius: 100px;
+  color: #001b12;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-warning:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255,184,77,0.4);
+}
+
+.btn-outline-warning {
+  padding: 12px 32px;
+  background: transparent;
+  border: 1px solid var(--warning);
+  border-radius: 100px;
+  color: var(--warning);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-warning:hover {
+  background: var(--warning);
+  color: #001b12;
+  transform: translateY(-2px);
+}
+
+.engineer-stats {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 32px;
+  text-align: center;
+}
+
+.engineer-stats h3 {
+  font-size: 1.5rem;
+  margin-bottom: 24px;
+  color: var(--warning);
+}
+
+.engineer-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.engineer-stat {
+  text-align: center;
+}
+
+.engineer-stat-number {
+  font-family: 'Syne', sans-serif;
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.engineer-stat-label {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
 .cta {
   padding: 80px 32px;
   text-align: center;
@@ -387,7 +536,6 @@ footer {
   
   .hero-stats {
     gap: 24px;
-    flex-wrap: wrap;
   }
   
   .services {
@@ -409,6 +557,19 @@ footer {
   .steps {
     grid-template-columns: 1fr;
     gap: 40px;
+  }
+  
+  .engineer-container {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  
+  .engineer-benefits {
+    grid-template-columns: 1fr;
+  }
+  
+  .engineer-stats-grid {
+    grid-template-columns: 1fr;
   }
   
   .cta {
@@ -439,6 +600,10 @@ footer {
     font-size: 1.8rem;
   }
   
+  .engineer-content h2 {
+    font-size: 1.5rem;
+  }
+  
   .cta h2 {
     font-size: 1.5rem;
   }
@@ -447,7 +612,7 @@ footer {
     flex-direction: column;
   }
   
-  .btn-primary, .btn-outline {
+  .btn-primary, .btn-outline, .btn-warning, .btn-outline-warning {
     width: 100%;
   }
 }
@@ -462,7 +627,8 @@ footer {
     <a href="about.html">About</a>
     <a href="services.html">Services</a>
     <a href="contact.html">Contact</a>
-    <button class="btn-outline" onclick="window.location.href='../customer-app/login.html'">Sign In</button>
+    <button class="btn-outline" onclick="window.location.href='../customer-app/login.html'">Sign In as Customer</button>
+    <button class="btn-engineer" onclick="window.location.href='../engineer-app/login.html'">🔧 Sign In as Engineer</button>
     <button class="btn-primary" onclick="window.location.href='../customer-app/signup.html'">Book a Repair →</button>
   </div>
 </nav>
@@ -560,6 +726,50 @@ footer {
     </div>
   </section>
 
+  <!-- NEW: Engineer Recruitment Section -->
+  <section class="engineer-section">
+    <div class="engineer-container">
+      <div class="engineer-content">
+        <h2>Are you an <span>Engineer?</span></h2>
+        <p>Join Nigeria's fastest-growing repair network! We're looking for skilled, passionate engineers to help customers get their devices fixed quickly and professionally.</p>
+        <div class="engineer-benefits">
+          <div class="benefit-item">Flexible working hours</div>
+          <div class="benefit-item">Competitive payouts</div>
+          <div class="benefit-item">Work from your location</div>
+          <div class="benefit-item">Build your reputation</div>
+          <div class="benefit-item">Weekly payments</div>
+          <div class="benefit-item">24/7 support</div>
+        </div>
+        <div class="engineer-buttons">
+          <button class="btn-warning" onclick="window.location.href='../engineer-app/apply.html'">Apply to Join →</button>
+          <button class="btn-outline-warning" onclick="window.location.href='../engineer-app/login.html'">Sign in as Engineer →</button>
+        </div>
+      </div>
+      <div class="engineer-stats">
+        <h3>🔧 Engineer Benefits</h3>
+        <div class="engineer-stats-grid">
+          <div class="engineer-stat">
+            <div class="engineer-stat-number">₦50k+</div>
+            <div class="engineer-stat-label">Average Monthly</div>
+          </div>
+          <div class="engineer-stat">
+            <div class="engineer-stat-number">20+</div>
+            <div class="engineer-stat-label">Jobs per week</div>
+          </div>
+          <div class="engineer-stat">
+            <div class="engineer-stat-number">4.9★</div>
+            <div class="engineer-stat-label">Top Engineer Rating</div>
+          </div>
+          <div class="engineer-stat">
+            <div class="engineer-stat-number">48</div>
+            <div class="engineer-stat-label">Active Engineers</div>
+          </div>
+        </div>
+        <p style="color: var(--muted); font-size: 0.8rem; margin-top: 24px;">Join our growing team of certified repair experts</p>
+      </div>
+    </div>
+  </section>
+
   <section class="services" id="pricing">
     <div class="section-title">
       <h2>Transparent Pricing</h2>
@@ -598,7 +808,7 @@ footer {
     <p>Join thousands of satisfied customers who trust Xpressfixing for their repairs</p>
     <div class="cta-buttons">
       <button class="btn-primary" style="padding: 14px 36px;" onclick="window.location.href='../customer-app/signup.html'">Book a Repair →</button>
-      <button class="btn-outline" style="padding: 14px 36px;" onclick="window.location.href='services.html'">View All Services</button>
+      <button class="btn-engineer" style="padding: 14px 36px;" onclick="window.location.href='../engineer-app/apply.html'">Apply as Engineer →</button>
     </div>
   </section>
 </main>
@@ -610,7 +820,8 @@ footer {
     <a href="about.html">About</a>
     <a href="services.html">Services</a>
     <a href="contact.html">Contact</a>
-    <a href="../customer-app/login.html">Sign In</a>
+    <a href="../customer-app/login.html">Customer Sign In</a>
+    <a href="../engineer-app/login.html">Engineer Sign In</a>
   </div>
   <div class="copyright">© 2025 Xpressfixing. All rights reserved.</div>
 </footer>

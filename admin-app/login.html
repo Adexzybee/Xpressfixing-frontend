@@ -212,6 +212,7 @@ input:focus {
 <div id="toast" class="toast"></div>
 
 <script>
+
 let users = JSON.parse(localStorage.getItem('xpressfixing_users')) || [];
 
 const demoAdmin = {
@@ -282,7 +283,7 @@ function handleAdminLogin() {
   showToast('2FA verified. Access granted!');
   
   setTimeout(() => {
-    window.location.href = 'admin-dashboard.html';
+    window.location.href = 'dashboard.html';
   }, 1000);
 }
 

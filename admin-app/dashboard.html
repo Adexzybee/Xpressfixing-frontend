@@ -1,80 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes"/>
-<meta name="theme-color" content="#0d0d14">
-<title>Xpressfixing — Admin Console</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Xpressfixing — Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet"/>
 <style>
-/* ── TOKENS ── */
 :root {
-  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  --mono: 'Courier New', Courier, monospace;
-
   --bg: #0d0d14;
   --surface: #13131e;
   --card: #1a1a28;
   --card2: #1f1f30;
   --border: #272738;
-  --border2: #32324a;
-
   --accent: #6c63ff;
   --accent-light: rgba(108,99,255,0.12);
   --accent2: #00d4aa;
   --accent3: #ff6b6b;
-
   --text: #f0f0fa;
   --muted: #6b6b8f;
-  --muted2: #3e3e58;
   --success: #00d4aa;
   --danger: #ff6b6b;
   --warning: #ffb84d;
-
   --sidebar-w: 260px;
   --topbar-h: 64px;
-  --bnav-h: 62px;
 }
 
-/* ── RESET ── */
-*, *::before, *::after { 
-  margin: 0; 
-  padding: 0; 
-  box-sizing: border-box; 
-  -webkit-tap-highlight-color: transparent; 
-}
-html { 
-  font-size: 16px; 
-  scroll-behavior: smooth;
-}
-body { 
-  font-family: var(--font); 
-  background: var(--bg); 
-  color: var(--text); 
-  min-height: 100vh; 
-  overflow-x: hidden; 
-}
-button { 
-  font-family: var(--font); 
-  cursor: pointer; 
-  border: none;
-  background: none;
-}
-input, select, textarea { 
-  font-family: var(--font); 
-}
-a { 
-  text-decoration: none; 
-  color: inherit; 
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  overflow-x: hidden;
 }
 
-/* ── LAYOUT ── */
-.layout { 
-  display: flex; 
-  min-height: 100vh; 
-  position: relative;
-}
+.layout { display: flex; min-height: 100vh; }
 
-/* ── SIDEBAR (desktop) ── */
+/* Sidebar */
 .sidebar {
   width: var(--sidebar-w);
   background: var(--surface);
@@ -82,1181 +44,247 @@ a {
   display: flex;
   flex-direction: column;
   position: fixed;
-  top: 0; 
-  left: 0; 
-  bottom: 0;
+  top: 0; left: 0; bottom: 0;
   z-index: 200;
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.3s ease;
   overflow-y: auto;
 }
 
-.sb-logo {
-  padding: 24px 20px 20px;
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-}
-.sb-logo-text { 
-  font-size: 1.3rem; 
-  font-weight: 800; 
-  letter-spacing: -0.5px; 
-}
-.sb-logo-text span { 
-  color: var(--accent); 
-}
-.sb-logo-sub { 
-  font-size: 0.65rem; 
-  color: var(--muted); 
-  margin-top: 4px; 
-  letter-spacing: 2px; 
-  text-transform: uppercase; 
-}
+.sb-logo { padding: 24px 20px; border-bottom: 1px solid var(--border); }
+.sb-logo-text { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; }
+.sb-logo-text span { color: var(--accent); }
+.sb-logo-sub { font-size: 0.65rem; color: var(--muted); margin-top: 4px; }
 
-.sb-nav { 
-  padding: 20px 12px; 
-  flex: 1; 
-  overflow-y: auto; 
-  display: flex; 
-  flex-direction: column; 
-  gap: 4px; 
-}
-
-.sb-sec { 
-  font-size: 0.6rem; 
-  color: var(--muted2); 
-  letter-spacing: 2px; 
-  text-transform: uppercase; 
-  padding: 12px 12px 6px; 
-  font-weight: 600;
-}
+.sb-nav { padding: 20px 12px; flex: 1; }
+.sb-sec { font-size: 0.6rem; color: #3e3e58; letter-spacing: 2px; text-transform: uppercase; padding: 12px 12px 6px; font-weight: 600; }
 .sb-item {
-  display: flex; 
-  align-items: center; 
-  gap: 12px;
-  padding: 10px 12px; 
-  border-radius: 10px; 
-  cursor: pointer;
-  font-size: 0.85rem; 
-  font-weight: 500; 
-  color: var(--muted);
-  transition: all 0.2s ease;
-  position: relative; 
-  user-select: none;
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 12px; border-radius: 10px;
+  cursor: pointer; font-size: 0.85rem; font-weight: 500;
+  color: var(--muted); transition: all 0.2s ease;
 }
-.sb-item:hover { 
-  background: var(--card); 
-  color: var(--text); 
-  transform: translateX(4px);
-}
-.sb-item.active { 
-  background: var(--accent-light); 
-  color: var(--accent); 
-}
-.sb-item.active::before {
-  content: '';
-  position: absolute; 
-  left: 0; 
-  top: 20%; 
-  bottom: 20%;
-  width: 3px; 
-  border-radius: 0 3px 3px 0; 
-  background: var(--accent);
-}
-.sb-icon { 
-  font-size: 1.1rem; 
-  width: 24px; 
-  text-align: center; 
-  flex-shrink: 0; 
-}
-.sb-badge { 
-  margin-left: auto; 
-  background: var(--accent3); 
-  color: #fff; 
-  font-size: 0.65rem; 
-  font-weight: 700; 
-  padding: 2px 8px; 
-  border-radius: 100px; 
-}
-.sb-badge.teal { 
-  background: var(--success); 
-}
+.sb-item:hover { background: var(--card); color: var(--text); }
+.sb-item.active { background: var(--accent-light); color: var(--accent); }
+.sb-icon { font-size: 1.1rem; width: 24px; text-align: center; }
 
-.sb-footer {
-  padding: 16px 12px;
-  border-top: 1px solid var(--border);
-  flex-shrink: 0;
-}
+.sb-footer { padding: 16px 12px; border-top: 1px solid var(--border); }
 .admin-chip {
-  display: flex; 
-  align-items: center; 
-  gap: 12px;
-  background: var(--card); 
-  border-radius: 12px; 
-  padding: 12px;
-  transition: all 0.2s ease;
+  display: flex; align-items: center; gap: 12px;
+  background: var(--card); border-radius: 12px; padding: 12px;
 }
-.admin-chip:hover {
-  background: var(--card2);
-  transform: translateX(4px);
-}
-.admin-ava { 
-  width: 40px; 
-  height: 40px; 
-  border-radius: 10px; 
-  background: var(--accent-light); 
-  display: flex; 
-  align-items: center; 
-  justify-content: center; 
-  font-size: 1.2rem; 
-  flex-shrink: 0; 
-}
-.admin-name { 
-  font-size: 0.85rem; 
-  font-weight: 600; 
-}
-.admin-role { 
-  font-size: 0.7rem; 
-  color: var(--muted); 
-  margin-top: 2px; 
-}
+.admin-ava { width: 40px; height: 40px; border-radius: 10px; background: var(--accent-light); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+.admin-name { font-size: 0.85rem; font-weight: 600; }
+.admin-role { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
 
-/* overlay for mobile sidebar */
-.sb-overlay { 
-  display: none; 
-  position: fixed; 
-  inset: 0; 
-  background: rgba(0,0,0,0.6); 
-  backdrop-filter: blur(4px);
-  z-index: 190; 
-}
+.sb-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 190; }
 
-/* ── MAIN AREA ── */
-.main { 
-  margin-left: var(--sidebar-w); 
-  flex: 1; 
-  display: flex; 
-  flex-direction: column; 
-  min-height: 100vh; 
-}
+/* Main Area */
+.main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
 
-/* ── TOPBAR ── */
+/* Topbar */
 .topbar {
   height: var(--topbar-h);
   background: var(--surface);
   border-bottom: 1px solid var(--border);
   padding: 0 24px;
-  display: flex; 
-  align-items: center; 
+  display: flex;
+  align-items: center;
   justify-content: space-between;
-  position: sticky; 
-  top: 0; 
+  position: sticky;
+  top: 0;
   z-index: 100;
-  gap: 16px;
 }
-.menu-btn {
-  display: none;
-  width: 40px; 
-  height: 40px; 
-  border-radius: 10px;
-  background: var(--card); 
-  border: 1px solid var(--border);
-  align-items: center; 
-  justify-content: center;
-  cursor: pointer; 
-  flex-shrink: 0;
-  transition: all 0.2s ease;
-}
-.menu-btn:hover {
-  background: var(--card2);
-  border-color: var(--accent);
-}
-.menu-btn svg { 
-  width: 20px; 
-  height: 20px; 
-  stroke: var(--muted); 
-}
+
+.menu-btn { display: none; width: 40px; height: 40px; border-radius: 10px; background: var(--card); border: 1px solid var(--border); align-items: center; justify-content: center; cursor: pointer; }
 
 .search-box {
-  display: flex; 
-  align-items: center; 
-  gap: 10px;
-  background: var(--card); 
-  border: 1px solid var(--border);
-  border-radius: 10px; 
-  padding: 8px 14px;
-  flex: 1; 
-  max-width: 360px;
-  transition: all 0.2s ease;
+  display: flex; align-items: center; gap: 10px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 10px; padding: 8px 14px;
+  flex: 1; max-width: 360px;
 }
-.search-box:focus-within {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 2px var(--accent-light);
-}
-.search-box input { 
-  background: transparent; 
-  border: none; 
-  outline: none; 
-  color: var(--text); 
-  font-size: 0.85rem; 
-  width: 100%; 
-}
-.search-box input::placeholder { 
-  color: var(--muted); 
-}
+.search-box input { background: transparent; border: none; outline: none; color: var(--text); font-size: 0.85rem; width: 100%; }
+.search-box input::placeholder { color: var(--muted); }
 
-.tb-actions { 
-  display: flex; 
-  align-items: center; 
-  gap: 10px; 
-}
-.tb-btn {
-  background: var(--card); 
-  border: 1px solid var(--border);
-  border-radius: 10px; 
-  padding: 8px 14px;
-  font-size: 0.8rem; 
-  color: var(--muted);
-  display: flex; 
-  align-items: center; 
-  gap: 6px;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-}
-.tb-btn:hover { 
-  border-color: var(--accent); 
-  color: var(--text); 
-  transform: translateY(-1px);
-}
-.notif-wrap { 
-  position: relative; 
-}
-.notif-dot { 
-  position: absolute; 
-  top: 5px; 
-  right: 5px; 
-  width: 8px; 
-  height: 8px; 
-  border-radius: 50%; 
-  background: var(--danger); 
-  border: 1.5px solid var(--surface); 
-}
+.tb-actions { display: flex; align-items: center; gap: 10px; }
+.tb-btn { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 8px 14px; font-size: 0.8rem; color: var(--muted); cursor: pointer; transition: all 0.2s ease; }
+.tb-btn:hover { border-color: var(--accent); color: var(--text); }
 
-/* ── CONTENT ── */
-.content { 
-  padding: 28px 32px; 
-  flex: 1; 
-  max-width: 1600px;
-  margin: 0 auto;
-  width: 100%;
-}
-.page { 
-  display: none; 
-  animation: fadeInUp 0.4s ease;
-}
-.page.active { 
-  display: block; 
-}
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+/* Content */
+.content { padding: 28px 32px; flex: 1; overflow-y: auto; }
+.page { display: none; animation: fadeIn 0.3s ease; }
+.page.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* ── PAGE HEADER ── */
-.ph {
-  display: flex; 
-  align-items: flex-start; 
-  justify-content: space-between;
-  margin-bottom: 28px; 
-  gap: 16px; 
-  flex-wrap: wrap;
-}
-.ph-title { 
-  font-size: 1.6rem; 
-  font-weight: 800; 
-  letter-spacing: -0.5px; 
-}
-.ph-sub   { 
-  font-size: 0.85rem; 
-  color: var(--muted); 
-  margin-top: 6px; 
-}
-.ph-actions { 
-  display: flex; 
-  gap: 12px; 
-  flex-wrap: wrap; 
-}
+/* Page Header */
+.ph { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 28px; flex-wrap: wrap; gap: 16px; }
+.ph-title { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; }
+.ph-sub { font-size: 0.85rem; color: var(--muted); margin-top: 6px; }
 
-/* ── BUTTONS ── */
-.btn {
-  padding: 10px 18px; 
-  border-radius: 10px;
-  font-size: 0.85rem; 
-  font-weight: 600;
-  transition: all 0.2s ease;
-  display: inline-flex; 
-  align-items: center; 
-  gap: 8px;
-  cursor: pointer;
-}
-.btn-accent { 
-  background: var(--accent); 
-  color: #fff; 
-}
-.btn-accent:hover { 
-  opacity: 0.9; 
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(108,99,255,0.3);
-}
-.btn-ghost { 
-  background: var(--card); 
-  border: 1px solid var(--border); 
-  color: var(--muted); 
-}
-.btn-ghost:hover { 
-  color: var(--text); 
-  border-color: var(--accent);
-  transform: translateY(-1px);
-}
-.btn-sm { 
-  padding: 6px 12px; 
-  font-size: 0.75rem; 
-}
-.btn-danger-ghost { 
-  background: rgba(255,107,107,0.1); 
-  border: 1px solid rgba(255,107,107,0.2); 
-  color: var(--danger); 
-}
-.btn-danger-ghost:hover {
-  background: rgba(255,107,107,0.2);
-  border-color: var(--danger);
-}
-.btn-success-ghost { 
-  background: rgba(0,212,170,0.1); 
-  border: 1px solid rgba(0,212,170,0.2); 
-  color: var(--success); 
-}
-.btn-success-ghost:hover {
-  background: rgba(0,212,170,0.2);
-  border-color: var(--success);
-}
-
-/* ── KPI GRID ── */
-.kpi-grid { 
-  display: grid; 
-  grid-template-columns: repeat(4, 1fr); 
-  gap: 20px; 
-  margin-bottom: 28px; 
-}
-.kpi-card {
-  background: var(--card); 
-  border: 1px solid var(--border);
-  border-radius: 16px; 
-  padding: 20px; 
-  transition: all 0.2s ease;
-}
-.kpi-card:hover {
-  transform: translateY(-4px);
-  border-color: var(--accent);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-}
-.kpi-top { 
-  display: flex; 
-  justify-content: space-between; 
-  align-items: flex-start; 
-  margin-bottom: 16px; 
-}
-.kpi-ico { 
-  width: 44px; 
-  height: 44px; 
-  border-radius: 12px; 
-  display: flex; 
-  align-items: center; 
-  justify-content: center; 
-  font-size: 1.2rem; 
-}
+/* KPI Grid */
+.kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 28px; }
+.kpi-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; transition: all 0.2s ease; }
+.kpi-card:hover { transform: translateY(-2px); border-color: var(--accent); }
+.kpi-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+.kpi-ico { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
 .kpi-ico.purple { background: rgba(108,99,255,0.15); }
-.kpi-ico.teal   { background: rgba(0,212,170,0.12); }
-.kpi-ico.red    { background: rgba(255,107,107,0.12); }
+.kpi-ico.teal { background: rgba(0,212,170,0.12); }
+.kpi-ico.red { background: rgba(255,107,107,0.12); }
 .kpi-ico.yellow { background: rgba(255,184,77,0.12); }
-.kpi-badge { 
-  font-size: 0.7rem; 
-  font-weight: 700; 
-  padding: 4px 10px; 
-  border-radius: 100px; 
-}
-.kpi-badge.up   { background: rgba(0,212,170,0.15); color: var(--success); }
-.kpi-badge.warn { background: rgba(255,107,107,0.12); color: var(--danger); }
-.kpi-val   { 
-  font-size: 2rem; 
-  font-weight: 800; 
-  font-family: var(--mono); 
-  letter-spacing: -1px; 
-  margin-bottom: 6px;
-}
-.kpi-label { 
-  font-size: 0.8rem; 
-  color: var(--muted); 
-  margin-bottom: 4px;
-}
-.kpi-sub   { 
-  font-size: 0.7rem; 
-  color: var(--muted2); 
+.kpi-badge { font-size: 0.7rem; font-weight: 700; padding: 4px 10px; border-radius: 100px; }
+.kpi-badge.up { background: rgba(0,212,170,0.15); color: var(--success); }
+.kpi-val { font-size: 2rem; font-weight: 800; font-family: 'Courier New', monospace; letter-spacing: -1px; margin-bottom: 6px; }
+.kpi-label { font-size: 0.8rem; color: var(--muted); margin-bottom: 4px; }
+
+/* Stats Row (for workflow tracking) */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin-bottom: 28px;
 }
 
-/* ── CHARTS ROW ── */
-.charts-row { 
-  display: grid; 
-  grid-template-columns: 1fr 1fr; 
-  gap: 20px; 
-  margin-bottom: 28px; 
-}
-.chart-card { 
-  background: var(--card); 
-  border: 1px solid var(--border); 
-  border-radius: 16px; 
-  padding: 20px; 
-  transition: all 0.2s ease;
-}
-.chart-card:hover {
-  border-color: var(--accent);
-}
-.chart-title { 
-  font-size: 0.95rem; 
-  font-weight: 700; 
-  margin-bottom: 4px; 
-}
-.chart-sub   { 
-  font-size: 0.75rem; 
-  color: var(--muted); 
-  margin-bottom: 20px; 
-}
-.bar-chart { 
-  display: flex; 
-  align-items: flex-end; 
-  gap: 8px; 
-  height: 100px; 
-}
-.bar { 
-  flex: 1; 
-  border-radius: 6px 6px 0 0; 
-  cursor: pointer; 
-  transition: all 0.2s ease;
-  background: var(--accent);
-}
-.bar:hover { 
-  opacity: 0.8;
-  transform: scaleY(1.02);
-}
-.bar-labels { 
-  display: flex; 
-  gap: 8px; 
-  margin-top: 12px; 
-}
-.brl { 
-  flex: 1; 
-  text-align: center; 
-  font-size: 0.7rem; 
-  color: var(--muted); 
-}
-.donut-wrap { 
-  display: flex; 
-  align-items: center; 
-  gap: 24px; 
-  flex-wrap: wrap;
-}
-.donut-legend { 
-  flex: 1; 
-  display: flex; 
-  flex-direction: column; 
-  gap: 10px; 
-}
-.leg { 
-  display: flex; 
-  align-items: center; 
-  gap: 10px; 
-  font-size: 0.85rem; 
-}
-.leg-dot { 
-  width: 10px; 
-  height: 10px; 
-  border-radius: 3px; 
-  flex-shrink: 0; 
-}
-.leg-val { 
-  margin-left: auto; 
-  font-family: var(--mono); 
-  font-weight: 600; 
-  font-size: 0.85rem; 
-}
-
-/* ── TABLE CARD ── */
-.tcard { 
-  background: var(--card); 
-  border: 1px solid var(--border); 
-  border-radius: 16px; 
-  overflow: hidden; 
-  margin-bottom: 20px; 
-}
-.tcard-hdr {
-  padding: 18px 20px;
-  border-bottom: 1px solid var(--border);
-  display: flex; 
-  align-items: center; 
-  justify-content: space-between;
-  flex-wrap: wrap; 
-  gap: 12px;
-}
-.tcard-title { 
-  font-size: 0.95rem; 
-  font-weight: 700; 
-}
-.tcard-controls { 
-  display: flex; 
-  gap: 10px; 
-  align-items: center; 
-  flex-wrap: wrap; 
-}
-.fsel {
-  background: var(--card2); 
+.stat-card-large {
+  background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 8px; 
-  color: var(--text); 
-  font-size: 0.8rem;
-  padding: 8px 12px; 
-  outline: none; 
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-.fsel:hover {
-  border-color: var(--accent);
-}
-
-/* Desktop table */
-.dtable-wrap { 
-  overflow-x: auto; 
-}
-table { 
-  width: 100%; 
-  border-collapse: collapse; 
-}
-thead tr { 
-  border-bottom: 1px solid var(--border); 
-}
-th { 
-  padding: 12px 18px; 
-  text-align: left; 
-  font-size: 0.7rem; 
-  font-weight: 600; 
-  color: var(--muted); 
-  text-transform: uppercase; 
-  letter-spacing: 0.8px; 
-  white-space: nowrap; 
-}
-td { 
-  padding: 14px 18px; 
-  font-size: 0.85rem; 
-  border-bottom: 1px solid var(--border); 
-}
-tr:last-child td { 
-  border-bottom: none; 
-}
-tr:hover td { 
-  background: rgba(255,255,255,0.02); 
-}
-.td-name { 
-  font-weight: 600; 
-}
-.td-sub  { 
-  font-size: 0.7rem; 
-  color: var(--muted); 
-  margin-top: 2px; 
-}
-.td-mono { 
-  font-family: var(--mono); 
-  font-size: 0.8rem; 
-}
-.cell-user { 
-  display: flex; 
-  align-items: center; 
-  gap: 12px; 
-}
-.cell-ava {
-  width: 36px; 
-  height: 36px; 
-  border-radius: 10px;
-  display: flex; 
-  align-items: center; 
-  justify-content: center;
-  font-size: 1rem; 
-  flex-shrink: 0;
-}
-.arow { 
-  display: flex; 
-  gap: 6px; 
-}
-
-/* ── STATUS PILLS ── */
-.pill {
-  display: inline-flex; 
-  align-items: center; 
-  gap: 5px;
-  font-size: 0.7rem; 
-  font-weight: 700;
-  padding: 4px 10px; 
-  border-radius: 100px;
-  text-transform: uppercase; 
-  letter-spacing: 0.3px;
-  white-space: nowrap;
-}
-.p-active    { background: rgba(0,212,170,0.12);  color: var(--success); }
-.p-pending   { background: rgba(255,184,77,0.12);  color: var(--warning); }
-.p-suspended { background: rgba(255,107,107,0.12); color: var(--danger);  }
-.p-new       { background: rgba(108,99,255,0.15);  color: var(--accent);  }
-.p-inrepair  { background: rgba(0,212,170,0.1);    color: var(--success); }
-.p-completed { background: rgba(255,255,255,0.06); color: var(--muted);   }
-.p-dispute   { background: rgba(255,107,107,0.12); color: var(--danger);  }
-.p-held      { background: rgba(255,107,107,0.12); color: var(--danger);  }
-
-/* ── MOBILE CARDS ── */
-.mobile-cards { 
-  display: none; 
-}
-.mcard {
-  border-bottom: 1px solid var(--border);
-  padding: 16px;
-  transition: background 0.2s ease;
-}
-.mcard:active {
-  background: rgba(255,255,255,0.02);
-}
-.mcard:last-child { 
-  border-bottom: none; 
-}
-.mcard-top { 
-  display: flex; 
-  justify-content: space-between; 
-  align-items: flex-start; 
-  margin-bottom: 10px; 
-}
-.mcard-name { 
-  font-weight: 700; 
-  font-size: 0.9rem; 
-}
-.mcard-sub  { 
-  font-size: 0.75rem; 
-  color: var(--muted); 
-  margin-top: 4px; 
-}
-.mcard-meta { 
-  display: flex; 
-  flex-wrap: wrap; 
-  gap: 12px; 
-  margin-bottom: 12px; 
-  font-size: 0.75rem; 
-  color: var(--muted); 
-}
-.mcard-meta span { 
-  display: flex; 
-  align-items: center; 
-  gap: 4px; 
-}
-.mcard-actions { 
-  display: flex; 
-  gap: 8px; 
-  flex-wrap: wrap; 
-}
-
-/* ── ACTIVITY FEED ── */
-.act-item {
-  display: flex; 
-  align-items: flex-start; 
-  gap: 14px;
-  padding: 16px 20px; 
-  border-bottom: 1px solid var(--border);
-  transition: background 0.2s ease;
-}
-.act-item:hover { 
-  background: rgba(255,255,255,0.02); 
-}
-.act-ico {
-  width: 38px; 
-  height: 38px; 
-  border-radius: 10px; 
-  flex-shrink: 0;
-  display: flex; 
-  align-items: center; 
-  justify-content: center; 
-  font-size: 1rem;
-}
-.act-ico.booking  { background: rgba(108,99,255,0.15); }
-.act-ico.payment  { background: rgba(0,212,170,0.12); }
-.act-ico.engineer { background: rgba(255,184,77,0.12); }
-.act-ico.dispute  { background: rgba(255,107,107,0.12); }
-.act-text { 
-  font-size: 0.85rem; 
-  line-height: 1.5; 
-  flex: 1; 
-}
-.act-time { 
-  font-size: 0.7rem; 
-  color: var(--muted); 
-  white-space: nowrap; 
-  flex-shrink: 0; 
-}
-
-/* ── DISPUTE CARDS ── */
-.dispute-card {
-  background: var(--card); 
-  border: 1px solid var(--border);
-  border-radius: 16px; 
-  padding: 20px; 
-  margin-bottom: 16px;
-  transition: all 0.2s ease;
-}
-.dispute-card:hover {
-  border-color: var(--accent);
-  transform: translateX(4px);
-}
-.disp-top { 
-  display: flex; 
-  justify-content: space-between; 
-  align-items: flex-start; 
-  margin-bottom: 14px; 
-  gap: 12px; 
-}
-.disp-id     { 
-  font-family: var(--mono); 
-  font-size: 0.75rem; 
-  color: var(--muted); 
-}
-.disp-title  { 
-  font-size: 1rem; 
-  font-weight: 700; 
-  margin-top: 6px; 
-}
-.disp-parties { 
-  display: flex; 
-  flex-wrap: wrap; 
-  gap: 10px; 
-  margin-bottom: 14px; 
-}
-.disp-party {
-  background: var(--card2); 
-  border: 1px solid var(--border);
-  border-radius: 10px; 
-  padding: 8px 14px; 
-  font-size: 0.8rem;
-}
-.dp-label { 
-  font-size: 0.65rem; 
-  color: var(--muted); 
-  margin-bottom: 3px; 
-}
-.disp-desc { 
-  font-size: 0.85rem; 
-  color: var(--muted); 
-  line-height: 1.6; 
-  margin-bottom: 16px; 
-}
-.disp-actions { 
-  display: flex; 
-  gap: 10px; 
-  flex-wrap: wrap; 
-}
-
-/* ── SETTINGS ── */
-.settings-grid { 
-  display: grid; 
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
-  gap: 20px; 
-}
-.settings-card { 
-  background: var(--card); 
-  border: 1px solid var(--border); 
-  border-radius: 16px; 
-  padding: 24px; 
-}
-.settings-title { 
-  font-weight: 700; 
-  font-size: 1rem; 
-  margin-bottom: 20px; 
-}
-.det-row { 
-  display: flex; 
-  justify-content: space-between; 
-  align-items: center; 
-  padding: 12px 0; 
-  border-bottom: 1px solid var(--border); 
-  font-size: 0.85rem; 
-}
-.det-row:last-of-type { 
-  border-bottom: none; 
-}
-.det-label { 
-  color: var(--muted); 
-}
-.det-val   { 
-  font-weight: 600; 
-  text-align: right; 
-}
-
-/* ── MODAL ── */
-.modal-overlay {
-  display: none; 
-  position: fixed; 
-  inset: 0;
-  background: rgba(0,0,0,0.75); 
-  backdrop-filter: blur(8px);
-  z-index: 500;
-  align-items: center; 
-  justify-content: center; 
+  border-radius: 16px;
   padding: 20px;
 }
-.modal-overlay.open { 
-  display: flex; 
-}
-.modal {
-  background: var(--card); 
-  border: 1px solid var(--border);
-  border-radius: 20px; 
-  padding: 32px;
-  width: 100%; 
-  max-width: 480px;
-  max-height: 90vh; 
-  overflow-y: auto;
-  animation: modalFadeUp 0.25s ease;
-}
-@keyframes modalFadeUp { 
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  } 
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  } 
-}
-.modal-title { 
-  font-size: 1.2rem; 
-  font-weight: 800; 
-  margin-bottom: 6px; 
-}
-.modal-sub   { 
-  font-size: 0.8rem; 
-  color: var(--muted); 
-  margin-bottom: 24px; 
-}
-.modal-btns  { 
-  display: flex; 
-  gap: 12px; 
-  margin-top: 24px; 
-}
-.mbtn-close  {
-  flex: 1;
-  padding: 12px;
-  border-radius: 10px;
-  background: var(--card2);
-  border: 1px solid var(--border);
-  color: var(--muted);
-  font-size: 0.85rem;
-  transition: all 0.2s ease;
-}
-.mbtn-close:hover {
-  border-color: var(--accent);
-  color: var(--text);
-}
-.mbtn-action {
-  flex: 2;
-  padding: 12px;
-  border-radius: 10px;
-  background: var(--accent);
-  border: none;
-  color: #fff;
-  font-weight: 700;
-  font-size: 0.85rem;
-  transition: all 0.2s ease;
-}
-.mbtn-action:hover {
-  opacity: 0.9;
-  transform: translateY(-2px);
+
+.stat-card-large h3 {
+  margin-bottom: 16px;
+  font-size: 1rem;
 }
 
-/* ── BOTTOM NAV (mobile only) ── */
-.bottom-nav {
-  display: none;
-  position: fixed; 
-  bottom: 0; 
-  left: 0; 
-  right: 0;
-  height: var(--bnav-h);
-  background: var(--surface);
-  border-top: 1px solid var(--border);
-  justify-content: space-around; 
-  align-items: center;
-  z-index: 150;
-}
-.bn-item {
-  flex: 1; 
-  display: flex; 
+.stat-list {
+  display: flex;
   flex-direction: column;
-  align-items: center; 
-  justify-content: center; 
-  gap: 4px;
-  font-size: 0.65rem; 
+  gap: 12px;
+}
+
+.stat-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.stat-list-label {
   color: var(--muted);
-  cursor: pointer; 
-  padding: 8px 0; 
-  position: relative;
-  user-select: none;
-  transition: all 0.2s ease;
-}
-.bn-item:active {
-  transform: scale(0.95);
-}
-.bn-item.active { 
-  color: var(--accent); 
-}
-.bn-item svg { 
-  width: 22px; 
-  height: 22px; 
-  display: block; 
-  stroke: currentColor;
-}
-.bn-badge {
-  position: absolute; 
-  top: 4px; 
-  right: calc(50% - 20px);
-  width: 16px; 
-  height: 16px; 
-  border-radius: 50%;
-  background: var(--accent3); 
-  color: #fff;
-  font-size: 0.55rem; 
-  font-weight: 800;
-  display: flex; 
-  align-items: center; 
-  justify-content: center;
-  border: 1.5px solid var(--surface);
 }
 
-/* ── TOAST ── */
-#toast {
-  display: none; 
-  position: fixed; 
-  bottom: 30px; 
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--accent); 
-  color: #fff;
-  padding: 12px 24px; 
-  border-radius: 12px;
-  font-size: 0.85rem; 
-  font-weight: 600; 
-  z-index: 999;
-  white-space: nowrap; 
-  pointer-events: none;
-  box-shadow: 0 4px 18px rgba(108,99,255,0.35);
-  max-width: 90%;
-  white-space: normal;
-  text-align: center;
+.stat-list-value {
+  font-weight: 700;
+  color: var(--accent);
 }
 
-/* ── RESPONSIVE BREAKPOINTS ── */
+/* Table Card */
+.tcard { background: var(--card); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 20px; }
+.tcard-hdr { padding: 18px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+.tcard-title { font-size: 0.95rem; font-weight: 700; }
+.fsel { background: var(--card2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 0.8rem; padding: 8px 12px; cursor: pointer; }
+.dtable-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th { padding: 12px 18px; text-align: left; font-size: 0.7rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; white-space: nowrap; }
+td { padding: 14px 18px; font-size: 0.85rem; border-bottom: 1px solid var(--border); }
+tr:hover td { background: rgba(255,255,255,0.02); }
+.td-name { font-weight: 600; }
+.td-sub { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
+.td-mono { font-family: 'Courier New', monospace; font-size: 0.8rem; }
+.cell-user { display: flex; align-items: center; gap: 12px; }
+.cell-ava { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+.arow { display: flex; gap: 6px; flex-wrap: wrap; }
 
-/* Tablet: collapse sidebar, adjust grids */
+/* Buttons */
+.btn { padding: 8px 16px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; border: none; }
+.btn-ghost { background: var(--card2); border: 1px solid var(--border); color: var(--muted); }
+.btn-ghost:hover { border-color: var(--accent); color: var(--text); }
+.btn-sm { padding: 4px 10px; font-size: 0.7rem; }
+.btn-danger-ghost { background: rgba(255,107,107,0.1); border: 1px solid rgba(255,107,107,0.2); color: var(--danger); }
+.btn-danger-ghost:hover { background: rgba(255,107,107,0.2); }
+.btn-success-ghost { background: rgba(0,212,170,0.1); border: 1px solid rgba(0,212,170,0.2); color: var(--success); }
+.btn-success-ghost:hover { background: rgba(0,212,170,0.2); }
+
+/* Pills */
+.pill { display: inline-flex; align-items: center; gap: 5px; font-size: 0.7rem; font-weight: 700; padding: 4px 10px; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.3px; white-space: nowrap; }
+.p-active { background: rgba(0,212,170,0.12); color: var(--success); }
+.p-pending { background: rgba(255,184,77,0.12); color: var(--warning); }
+.p-suspended { background: rgba(255,107,107,0.12); color: var(--danger); }
+
+/* Modals */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); z-index: 500; align-items: center; justify-content: center; padding: 20px; }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 32px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
+.modal-title { font-size: 1.2rem; font-weight: 800; margin-bottom: 6px; }
+.modal-sub { font-size: 0.8rem; color: var(--muted); margin-bottom: 24px; }
+.modal-btns { display: flex; gap: 12px; margin-top: 24px; }
+.det-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.det-label { color: var(--muted); }
+.det-val { font-weight: 600; text-align: right; }
+
+/* Toast */
+#toast { display: none; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--accent); color: #fff; padding: 12px 24px; border-radius: 12px; font-weight: 600; z-index: 1000; white-space: nowrap; }
+
+/* Bottom Nav Mobile */
+.bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; height: 62px; background: var(--surface); border-top: 1px solid var(--border); justify-content: space-around; align-items: center; z-index: 150; }
+.bn-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 0.65rem; color: var(--muted); cursor: pointer; padding: 8px 0; }
+.bn-item.active { color: var(--accent); }
+
 @media (max-width: 1024px) {
-  .sidebar { 
-    transform: translateX(-100%); 
-  }
-  .sidebar.open { 
-    transform: translateX(0); 
-  }
-  .sb-overlay.open { 
-    display: block; 
-  }
-  .main { 
-    margin-left: 0; 
-  }
-  .menu-btn { 
-    display: flex; 
-  }
-  .kpi-grid { 
-    grid-template-columns: repeat(2, 1fr); 
-  }
-  .charts-row { 
-    grid-template-columns: 1fr; 
-  }
-  .settings-grid { 
-    grid-template-columns: 1fr; 
-  }
-  .bottom-nav { 
-    display: flex; 
-  }
-  .content { 
-    padding-bottom: calc(var(--bnav-h) + 20px);
-  }
-  #toast { 
-    bottom: calc(var(--bnav-h) + 10px); 
-  }
-  .ph-title {
-    font-size: 1.3rem;
-  }
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .sb-overlay.open { display: block; }
+  .main { margin-left: 0; }
+  .menu-btn { display: flex; }
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .stats-row { grid-template-columns: 1fr; }
+  .bottom-nav { display: flex; }
+  .content { padding-bottom: 80px; }
+  #toast { bottom: 80px; white-space: normal; text-align: center; max-width: 90%; }
 }
-
-/* Mobile: cards instead of tables, tighter padding */
 @media (max-width: 768px) {
-  .content { 
-    padding: 20px 16px; 
-  }
-  .kpi-grid { 
-    gap: 12px; 
-  }
-  .kpi-val { 
-    font-size: 1.5rem; 
-  }
-  .kpi-card {
-    padding: 14px;
-  }
-  
-  /* Hide desktop table, show mobile cards */
-  .dtable-wrap { 
-    display: none; 
-  }
-  .mobile-cards { 
-    display: block; 
-  }
-  
-  .tcard-hdr { 
-    padding: 14px 16px; 
-  }
-  .tb-btn span:not(.tb-icon) { 
-    display: none; 
-  }
-  .search-box { 
-    max-width: none; 
-  }
-  .ph { 
-    flex-direction: column; 
-  }
-  .ph-actions {
-    width: 100%;
-  }
-  
-  /* activity feed tighter */
-  .act-text { 
-    font-size: 0.8rem; 
-  }
-  .act-time { 
-    display: none; 
-  }
-  .act-item {
-    padding: 14px 16px;
-  }
-  
-  .dispute-card {
-    padding: 16px;
-  }
-  .disp-title {
-    font-size: 0.9rem;
-  }
-  .disp-desc {
-    font-size: 0.8rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .kpi-grid {
-    grid-template-columns: 1fr;
-  }
-  .topbar {
-    padding: 0 16px;
-  }
-  .tb-actions {
-    gap: 6px;
-  }
-  .tb-btn {
-    padding: 6px 10px;
-  }
-}
-
-/* Scrollbar styling */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-::-webkit-scrollbar-track {
-  background: var(--surface);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--accent);
+  .content { padding: 20px 16px; }
+  .kpi-val { font-size: 1.5rem; }
+  .ph-title { font-size: 1.3rem; }
+  .search-box { max-width: none; }
 }
 </style>
 </head>
 <body>
 
 <div class="layout">
-
-  <!-- SIDEBAR -->
+  <!-- Sidebar -->
   <aside class="sidebar" id="sidebar">
     <div class="sb-logo">
       <div class="sb-logo-text">xpress<span>fixing</span></div>
       <div class="sb-logo-sub">Admin Console</div>
     </div>
-
     <nav class="sb-nav">
       <div class="sb-sec">Overview</div>
-      <div class="sb-item active" onclick="showPage('dashboard',this)">
+      <div class="sb-item active" onclick="showPage('dashboard')">
         <span class="sb-icon">📊</span> Dashboard
       </div>
-      <div class="sb-item" onclick="showPage('activity',this)">
-        <span class="sb-icon">⚡</span> Live Activity
-        <span class="sb-badge teal">12</span>
-      </div>
-
-      <div class="sb-sec">People</div>
-      <div class="sb-item" onclick="showPage('customers',this)">
+      <div class="sb-sec">Users</div>
+      <div class="sb-item" onclick="showPage('customers')">
         <span class="sb-icon">👥</span> Customers
       </div>
-      <div class="sb-item" onclick="showPage('engineers',this)">
+      <div class="sb-item" onclick="showPage('engineers')">
         <span class="sb-icon">🔧</span> Engineers
-        <span class="sb-badge">2</span>
       </div>
-      <div class="sb-item" onclick="showPage('dispatch',this)">
-        <span class="sb-icon">🚚</span> Dispatch
-      </div>
-
       <div class="sb-sec">Operations</div>
-      <div class="sb-item" onclick="showPage('bookings',this)">
+      <div class="sb-item" onclick="showPage('bookings')">
         <span class="sb-icon">📋</span> All Bookings
       </div>
-      <div class="sb-item" onclick="showPage('disputes',this)">
-        <span class="sb-icon">⚠️</span> Disputes
-        <span class="sb-badge">3</span>
-      </div>
-      <div class="sb-item" onclick="showPage('payments',this)">
+      <div class="sb-item" onclick="showPage('payments')">
         <span class="sb-icon">💰</span> Payments
       </div>
-
-      <div class="sb-sec">System</div>
-      <div class="sb-item" onclick="showPage('settings',this)">
-        <span class="sb-icon">⚙️</span> Settings
-      </div>
     </nav>
-
     <div class="sb-footer">
       <div class="admin-chip">
         <div class="admin-ava">👑</div>
         <div>
-          <div class="admin-name">Super Admin</div>
+          <div class="admin-name" id="admin-name">Super Admin</div>
           <div class="admin-role">Xpressfixing HQ</div>
         </div>
       </div>
@@ -1264,373 +292,471 @@ tr:hover td {
   </aside>
   <div class="sb-overlay" id="sb-overlay" onclick="closeSidebar()"></div>
 
-  <!-- MAIN AREA -->
+  <!-- Main Content -->
   <div class="main">
-
-    <!-- TOP BAR -->
     <div class="topbar">
-      <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">
-        <button class="menu-btn" onclick="openSidebar()">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round">
-            <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
-          </svg>
-        </button>
+      <div style="display:flex; align-items:center; gap:12px; flex:1;">
+        <button class="menu-btn" onclick="openSidebar()">☰</button>
         <div class="search-box">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-          </svg>
-          <input type="text" placeholder="Search bookings, customers, engineers…"/>
+          <input type="text" id="global-search" placeholder="Search customers, engineers, bookings..." onkeyup="globalSearch()">
         </div>
       </div>
       <div class="tb-actions">
-        <button class="tb-btn" onclick="toast('Report generated!')"><span>📅</span><span>Mar 2026</span></button>
-        <button class="tb-btn" onclick="toast('Exported!')"><span>⬇️</span><span>Export</span></button>
-        <div class="notif-wrap">
-          <button class="tb-btn" onclick="toast('No new notifications')">🔔</button>
-          <div class="notif-dot"></div>
-        </div>
+        <button class="tb-btn" onclick="refreshAllData()">🔄 Refresh</button>
+        <button class="tb-btn logout-btn" onclick="logout()">🚪 Logout</button>
       </div>
     </div>
 
-    <!-- CONTENT -->
     <div class="content">
-
-      <!-- DASHBOARD -->
+      <!-- Dashboard Page -->
       <div class="page active" id="page-dashboard">
         <div class="ph">
           <div>
             <div class="ph-title">Platform Overview</div>
-            <div class="ph-sub">Wednesday, 25 March 2026 — All systems operational</div>
-          </div>
-          <div class="ph-actions">
-            <button class="btn btn-accent" onclick="toast('Report generated!')">📊 Generate Report</button>
+            <div class="ph-sub" id="date-display"></div>
           </div>
         </div>
-
         <div class="kpi-grid">
-          <div class="kpi-card">
-            <div class="kpi-top"><div class="kpi-ico purple">📋</div><div class="kpi-badge up">↑ 18%</div></div>
-            <div class="kpi-val">1,248</div><div class="kpi-label">Total Bookings</div><div class="kpi-sub">247 this month</div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-top"><div class="kpi-ico teal">💰</div><div class="kpi-badge up">↑ 22%</div></div>
-            <div class="kpi-val">₦8.4M</div><div class="kpi-label">Total Revenue</div><div class="kpi-sub">₦1.2M this month</div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-top"><div class="kpi-ico yellow">👥</div><div class="kpi-badge up">↑ 9%</div></div>
-            <div class="kpi-val">3,612</div><div class="kpi-label">Customers</div><div class="kpi-sub">+84 this week</div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-top"><div class="kpi-ico red">🔧</div><div class="kpi-badge warn">2 pending</div></div>
-            <div class="kpi-val">48</div><div class="kpi-label">Engineers</div><div class="kpi-sub">2 awaiting approval</div>
-          </div>
+          <div class="kpi-card"><div class="kpi-top"><div class="kpi-ico purple">👥</div></div><div class="kpi-val" id="stat-customers">0</div><div class="kpi-label">Total Customers</div></div>
+          <div class="kpi-card"><div class="kpi-top"><div class="kpi-ico teal">🔧</div></div><div class="kpi-val" id="stat-engineers">0</div><div class="kpi-label">Total Engineers</div><div class="kpi-sub" id="stat-pending">0 pending</div></div>
+          <div class="kpi-card"><div class="kpi-top"><div class="kpi-ico yellow">📋</div></div><div class="kpi-val" id="stat-bookings">0</div><div class="kpi-label">Total Bookings</div></div>
+          <div class="kpi-card"><div class="kpi-top"><div class="kpi-ico red">💰</div></div><div class="kpi-val" id="stat-revenue">₦0</div><div class="kpi-label">Total Revenue</div></div>
         </div>
-
-        <div class="charts-row">
-          <div class="chart-card">
-            <div class="chart-title">Bookings — Last 7 Days</div>
-            <div class="chart-sub">Daily repair requests</div>
-            <div class="bar-chart">
-              <div class="bar" style="height:45%;background:var(--accent);opacity:.5;"></div>
-              <div class="bar" style="height:60%;background:var(--accent);opacity:.6;"></div>
-              <div class="bar" style="height:50%;background:var(--accent);opacity:.55;"></div>
-              <div class="bar" style="height:80%;background:var(--accent);"></div>
-              <div class="bar" style="height:70%;background:var(--accent);opacity:.75;"></div>
-              <div class="bar" style="height:92%;background:var(--accent2);"></div>
-              <div class="bar" style="height:65%;background:var(--accent);opacity:.65;"></div>
-            </div>
-            <div class="bar-labels"><div class="brl">Mon</div><div class="brl">Tue</div><div class="brl">Wed</div><div class="brl">Thu</div><div class="brl">Fri</div><div class="brl">Sat</div><div class="brl">Sun</div></div>
-          </div>
-          <div class="chart-card">
-            <div class="chart-title">Repair Types</div>
-            <div class="chart-sub">Most common issues this month</div>
-            <div class="donut-wrap">
-              <svg width="100" height="100" viewBox="0 0 100 100" style="flex-shrink:0;">
-                <circle cx="50" cy="50" r="40" fill="none" stroke="var(--border)" stroke-width="12"/>
-                <circle cx="50" cy="50" r="40" fill="none" stroke="#6c63ff" stroke-width="12" stroke-dasharray="86 128" stroke-dashoffset="0" stroke-linecap="round"/>
-                <circle cx="50" cy="50" r="40" fill="none" stroke="#00d4aa" stroke-width="12" stroke-dasharray="50 164" stroke-dashoffset="-86" stroke-linecap="round"/>
-                <circle cx="50" cy="50" r="40" fill="none" stroke="#ffb84d" stroke-width="12" stroke-dasharray="35 179" stroke-dashoffset="-136" stroke-linecap="round"/>
-                <circle cx="50" cy="50" r="40" fill="none" stroke="#ff6b6b" stroke-width="12" stroke-dasharray="29 185" stroke-dashoffset="-171" stroke-linecap="round"/>
-                <text x="50" y="55" text-anchor="middle" fill="var(--text)" font-size="12" font-weight="700">247</text>
-              </svg>
-              <div class="donut-legend">
-                <div class="leg"><div class="leg-dot" style="background:#6c63ff;"></div>Screen<span class="leg-val">88</span></div>
-                <div class="leg"><div class="leg-dot" style="background:#00d4aa;"></div>Battery<span class="leg-val">52</span></div>
-                <div class="leg"><div class="leg-dot" style="background:#ffb84d;"></div>Software<span class="leg-val">36</span></div>
-                <div class="leg"><div class="leg-dot" style="background:#ff6b6b;"></div>Other<span class="leg-val">71</span></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Recent bookings table -->
-        <div class="tcard">
-          <div class="tcard-hdr">
-            <div class="tcard-title">Recent Bookings</div>
-            <div class="tcard-controls">
-              <select class="fsel"><option>All Status</option><option>New</option><option>In Repair</option><option>Completed</option></select>
-              <button class="btn btn-ghost btn-sm" onclick="showPage('bookings',document.querySelector('[onclick*=bookings]'))">View All ›</button>
-            </div>
-          </div>
-          <!-- Desktop table -->
-          <div class="dtable-wrap">
-            <table>
-              <thead><tr><th>ID</th><th>Customer</th><th>Device</th><th>Engineer</th><th>Status</th><th>Amount</th><th>Action</th></tr></thead>
-              <tbody>
-                <tr><td class="td-mono">#XF-0851</td><td><div class="cell-user"><div class="cell-ava" style="background:rgba(108,99,255,.15);">👩🏽</div><div><div class="td-name">Chidinma Obi</div><div class="td-sub">Lagos · Lekki</div></div></div></td><td>iPhone 13 Pro</td><td>Adebayo S.</td><td><span class="pill p-new">● New</span></td><td class="td-mono" style="color:var(--warning);">₦28,000</td><td><div class="arow"><button class="btn btn-ghost btn-sm" onclick="openModal('booking-modal')">View</button><button class="btn btn-sm btn-danger-ghost" onclick="toast('Flagged!')">Flag</button></div></td></tr>
-                <tr><td class="td-mono">#XF-0848</td><td><div class="cell-user"><div class="cell-ava" style="background:rgba(0,212,170,.1);">👨🏿</div><div><div class="td-name">Emeka Chukwu</div><div class="td-sub">Lagos · VI</div></div></div></td><td>Samsung S22</td><td>Chiamaka E.</td><td><span class="pill p-inrepair">● In Repair</span></td><td class="td-mono" style="color:var(--success);">₦12,000</td><td><div class="arow"><button class="btn btn-ghost btn-sm" onclick="openModal('booking-modal')">View</button></div></td></tr>
-                <tr><td class="td-mono">#XF-0841</td><td><div class="cell-user"><div class="cell-ava" style="background:rgba(255,184,77,.12);">👩🏾</div><div><div class="td-name">Aisha Bello</div><div class="td-sub">Lagos · Surulere</div></div></div></td><td>Tecno Camon 20</td><td>Emeka N.</td><td><span class="pill p-inrepair">● In Repair</span></td><td class="td-mono" style="color:var(--success);">₦8,500</td><td><div class="arow"><button class="btn btn-ghost btn-sm" onclick="openModal('booking-modal')">View</button></div></td></tr>
-                <tr><td class="td-mono">#XF-0835</td><td><div class="cell-user"><div class="cell-ava" style="background:rgba(255,107,107,.1);">👨🏾</div><div><div class="td-name">Tunde Adeyemi</div><div class="td-sub">Abuja · Wuse</div></div></div></td><td>iPhone 12</td><td>Fatima K.</td><td><span class="pill p-completed">✓ Done</span></td><td class="td-mono" style="color:var(--muted);">₦15,000</td><td><div class="arow"><button class="btn btn-ghost btn-sm" onclick="openModal('booking-modal')">View</button></div></td></tr>
-              </tbody>
-            </table>
-          </div>
-          <!-- Mobile cards -->
-          <div class="mobile-cards">
-            <div class="mcard"><div class="mcard-top"><div><div class="mcard-name">Chidinma Obi</div><div class="mcard-sub">iPhone 13 Pro · #XF-0851</div></div><span class="pill p-new">New</span></div><div class="mcard-meta"><span>📍 Lagos</span><span>💰 ₦28,000</span><span>🔧 Adebayo S.</span></div><div class="mcard-actions"><button class="btn btn-ghost btn-sm" onclick="openModal('booking-modal')">View</button><button class="btn btn-sm btn-danger-ghost" onclick="toast('Flagged!')">Flag</button></div></div>
-            <div class="mcard"><div class="mcard-top"><div><div class="mcard-name">Emeka Chukwu</div><div class="mcard-sub">Samsung S22 · #XF-0848</div></div><span class="pill p-inrepair">In Repair</span></div><div class="mcard-meta"><span>📍 Lagos</span><span>💰 ₦12,000</span><span>🔧 Chiamaka E.</span></div><div class="mcard-actions"><button class="btn btn-ghost btn-sm" onclick="openModal('booking-modal')">View</button></div></div>
-            <div class="mcard"><div class="mcard-top"><div><div class="mcard-name">Aisha Bello</div><div class="mcard-sub">Tecno Camon 20 · #XF-0841</div></div><span class="pill p-inrepair">In Repair</span></div><div class="mcard-meta"><span>📍 Lagos</span><span>💰 ₦8,500</span><span>🔧 Emeka N.</span></div><div class="mcard-actions"><button class="btn btn-ghost btn-sm" onclick="openModal('booking-modal')">View</button></div></div>
-            <div class="mcard"><div class="mcard-top"><div><div class="mcard-name">Tunde Adeyemi</div><div class="mcard-sub">iPhone 12 · #XF-0835</div></div><span class="pill p-completed">Done</span></div><div class="mcard-meta"><span>📍 Abuja</span><span>💰 ₦15,000</span><span>🔧 Fatima K.</span></div><div class="mcard-actions"><button class="btn btn-ghost btn-sm" onclick="openModal('booking-modal')">View</button></div></div>
-          </div>
-        </div>
+        
+        <!-- Workflow Tracking Section -->
+        <div id="workflow-tracking"></div>
+        
+        <div class="tcard"><div class="tcard-hdr"><div class="tcard-title">Recent Bookings</div></div><div id="recent-bookings" class="dtable-wrap"><p style="padding: 20px;">Loading...</p></div></div>
       </div>
 
-      <!-- CUSTOMERS PAGE (simplified for brevity - similar structure) -->
+      <!-- Customers Page -->
       <div class="page" id="page-customers">
-        <div class="ph"><div><div class="ph-title">Customers</div><div class="ph-sub">3,612 registered users</div></div><div class="ph-actions"><button class="btn btn-ghost" onclick="toast('CSV exported!')">⬇️ Export</button></div></div>
-        <div class="tcard">
-          <div class="tcard-hdr"><div class="tcard-title">All Customers</div><div class="tcard-controls"><select class="fsel"><option>All</option><option>Active</option><option>Suspended</option></select></div></div>
-          <div class="dtable-wrap">
-            <table><thead><tr><th>Customer</th><th>Phone</th><th>Location</th><th>Bookings</th><th>Spent</th><th>Status</th><th>Action</th></tr></thead><tbody>
-              <tr><td><div class="cell-user"><div class="cell-ava" style="background:rgba(108,99,255,.15);">👩🏽</div><div><div class="td-name">Chidinma Obi</div><div class="td-sub">chidinma@gmail.com</div></div></div></td><td>0812 345 6789</td><td>Lagos · Lekki</td><td class="td-mono">7</td><td class="td-mono" style="color:var(--success);">₦134,500</td><td><span class="pill p-active">● Active</span></td><td><div class="arow"><button class="btn btn-ghost btn-sm" onclick="openModal('booking-modal')">View</button><button class="btn btn-sm btn-danger-ghost" onclick="toast('Suspended!')">Suspend</button></div></td></tr>
-              <tr><td><div class="cell-user"><div class="cell-ava" style="background:rgba(0,212,170,.1);">👨🏿</div><div><div class="td-name">Emeka Chukwu</div><div class="td-sub">emeka.c@yahoo.com</div></div></div></td><td>0803 912 4455</td><td>Lagos · VI</td><td class="td-mono">3</td><td class="td-mono" style="color:var(--success);">₦45,000</td><td><span class="pill p-active">● Active</span></td><td><div class="arow"><button class="btn btn-ghost btn-sm" onclick="openModal('booking-modal')">View</button><button class="btn btn-sm btn-danger-ghost" onclick="toast('Suspended!')">Suspend</button></div></td></tr>
-            </tbody></table>
-          </div>
-          <div class="mobile-cards">
-            <div class="mcard"><div class="mcard-top"><div><div class="mcard-name">Chidinma Obi</div><div class="mcard-sub">Lagos · Lekki · 7 bookings</div></div><span class="pill p-active">Active</span></div><div class="mcard-meta"><span>💰 ₦134,500 spent</span><span>📞 0812 345 6789</span></div><div class="mcard-actions"><button class="btn btn-ghost btn-sm" onclick="openModal('booking-modal')">View</button><button class="btn btn-sm btn-danger-ghost" onclick="toast('Suspended!')">Suspend</button></div></div>
-          </div>
-        </div>
+        <div class="ph"><div><div class="ph-title">Customers</div><div class="ph-sub" id="customer-count">0 registered users</div></div><button class="btn btn-ghost" onclick="loadData()">🔄 Refresh</button></div>
+        <div class="tcard"><div class="tcard-hdr"><div class="tcard-title">All Customers</div><select class="fsel" id="customer-filter" onchange="filterCustomers()"><option value="all">All</option><option value="active">Active</option><option value="suspended">Suspended</option></select></div>
+        <div class="dtable-wrap"><table><thead><tr><th>Customer</th><th>Phone</th><th>Location</th><th>Bookings</th><th>Status</th><th>Joined</th><th>Action</th></tr></thead><tbody id="customers-table-body"></tbody></table></div></div>
       </div>
 
-      <!-- ENGINEERS PAGE -->
+      <!-- Engineers Page -->
       <div class="page" id="page-engineers">
-        <div class="ph"><div><div class="ph-title">Engineers</div><div class="ph-sub">48 engineers · 2 pending approval</div></div><div class="ph-actions"><button class="btn btn-accent" onclick="toast('Invite sent!')">+ Invite Engineer</button></div></div>
-        <div class="tcard">
-          <div class="tcard-hdr"><div class="tcard-title">All Engineers</div><div class="tcard-controls"><select class="fsel"><option>All</option><option>Active</option><option>Pending</option></select></div></div>
-          <div class="dtable-wrap">
-            <table><thead><tr><th>Engineer</th><th>Speciality</th><th>Location</th><th>Jobs</th><th>Rating</th><th>Earnings</th><th>Status</th><th>Action</th></tr></thead><tbody>
-              <tr><td><div class="cell-user"><div class="cell-ava" style="background:rgba(0,212,170,.1);">👨🏾‍🔧</div><div><div class="td-name">Adebayo Suleiman</div><div class="td-sub">adebayo.s@mail.com</div></div></div></td><td>iPhone / iOS</td><td>Lekki</td><td class="td-mono">47</td><td style="color:var(--warning);">⭐ 4.9</td><td class="td-mono" style="color:var(--success);">₦184,500</td><td><span class="pill p-active">● Active</span></td><td><div class="arow"><button class="btn btn-ghost btn-sm" onclick="openModal('eng-modal')">View</button><button class="btn btn-sm btn-danger-ghost" onclick="toast('Suspended!')">Suspend</button></div></td></tr>
-              <tr><td><div class="cell-user"><div class="cell-ava" style="background:rgba(108,99,255,.15);">👩🏽‍🔧</div><div><div class="td-name">Chiamaka Eze</div><div class="td-sub">chiamaka.e@mail.com</div></div></div></td><td>Android / Samsung</td><td>VI</td><td class="td-mono">31</td><td style="color:var(--warning);">⭐ 4.8</td><td class="td-mono" style="color:var(--success);">₦142,000</td><td><span class="pill p-active">● Active</span></td><td><div class="arow"><button class="btn btn-ghost btn-sm" onclick="openModal('eng-modal')">View</button></div></td></tr>
-              <tr><td><div class="cell-user"><div class="cell-ava" style="background:rgba(255,184,77,.12);">👨🏿‍🔧</div><div><div class="td-name">Kunle Martins</div><div class="td-sub">kunle.m@mail.com</div></div></div></td><td>General / Laptop</td><td>Abuja</td><td class="td-mono">0</td><td style="color:var(--muted);">No reviews</td><td class="td-mono" style="color:var(--muted);">₦0</td><td><span class="pill p-pending">● Pending</span></td><td><div class="arow"><button class="btn btn-sm btn-success-ghost" onclick="toast('Approved! ✓')">Approve</button><button class="btn btn-sm btn-danger-ghost" onclick="toast('Rejected')">Reject</button></div></td></tr>
-            </tbody></table>
-          </div>
-          <div class="mobile-cards">
-            <div class="mcard"><div class="mcard-top"><div><div class="mcard-name">Adebayo Suleiman</div><div class="mcard-sub">iPhone / iOS · Lekki</div></div><span class="pill p-active">Active</span></div><div class="mcard-meta"><span>⭐ 4.9 (134 reviews)</span><span>💰 ₦184,500</span><span>47 jobs</span></div><div class="mcard-actions"><button class="btn btn-ghost btn-sm" onclick="openModal('eng-modal')">View</button><button class="btn btn-sm btn-danger-ghost" onclick="toast('Suspended!')">Suspend</button></div></div>
-          </div>
-        </div>
+        <div class="ph"><div><div class="ph-title">Engineers</div><div class="ph-sub" id="engineer-count">0 engineers</div></div><div style="display: flex; gap: 12px;"><button class="btn btn-ghost" onclick="loadData()">🔄 Refresh</button><button class="btn btn-ghost" onclick="showBannedEngineers()">🚫 View Banned</button></div></div>
+        <div class="tcard"><div class="tcard-hdr"><div class="tcard-title">All Engineers</div><select class="fsel" id="engineer-filter" onchange="filterEngineers()"><option value="all">All</option><option value="active">Active</option><option value="pending">Pending</option><option value="suspended">Suspended</option></select></div>
+        <div class="dtable-wrap"><table><thead><tr><th>Engineer</th><th>Speciality</th><th>Location</th><th>Jobs</th><th>Rating</th><th>Earnings</th><th>Status</th><th>Action</th></tr></thead><tbody id="engineers-table-body"></tbody></table></div></div>
       </div>
 
-      <!-- Additional pages (Bookings, Disputes, Payments, Activity, Dispatch, Settings) follow similar pattern -->
-      <!-- For brevity, I'm showing key pages. The remaining pages maintain the same responsive structure -->
-
-      <!-- BOOKINGS PAGE -->
+      <!-- Bookings Page -->
       <div class="page" id="page-bookings">
-        <div class="ph"><div><div class="ph-title">All Bookings</div><div class="ph-sub">1,248 total · 12 active right now</div></div><div class="ph-actions"><select class="fsel"><option>All Cities</option><option>Lagos</option><option>Abuja</option></select><button class="btn btn-ghost" onclick="toast('Exported!')">⬇️ Export</button></div></div>
-        <div class="tcard">
-          <div class="tcard-hdr"><div class="tcard-title">Booking Log</div><div class="tcard-controls"><select class="fsel"><option>All Status</option><option>New</option><option>In Repair</option><option>Completed</option></select></div></div>
-          <div class="dtable-wrap">
-            <table><thead><tr><th>ID</th><th>Customer</th><th>Device & Issue</th><th>Engineer</th><th>City</th><th>Status</th><th>Amount</th><th>Date</th><th>Action</th></tr></thead><tbody>
-              <tr><td class="td-mono">#XF-0851</td><td>Chidinma Obi</td><td>iPhone 13 · Screen</td><td>Adebayo S.</td><td>Lagos</td><td><span class="pill p-new">New</span></td><td class="td-mono" style="color:var(--warning);">₦28,000</td><td style="color:var(--muted);">Today</td><td><button class="btn btn-ghost btn-sm" onclick="openModal('booking-modal')">View</button></td></tr>
-              <tr><td class="td-mono">#XF-0848</td><td>Emeka Chukwu</td><td>Samsung S22 · Camera</td><td>Chiamaka E.</td><td>Lagos</td><td><span class="pill p-inrepair">In Repair</span></td><td class="td-mono" style="color:var(--success);">₦12,000</td><td style="color:var(--muted);">Today</td><td><button class="btn btn-ghost btn-sm" onclick="openModal('booking-modal')">View</button></td></tr>
-            </tbody></table>
-          </div>
-          <div class="mobile-cards">
-            <div class="mcard"><div class="mcard-top"><div><div class="mcard-name">Chidinma Obi</div><div class="mcard-sub">#XF-0851 · iPhone 13 Pro</div></div><span class="pill p-new">New</span></div><div class="mcard-meta"><span>📍 Lagos</span><span>💰 ₦28,000</span></div><div class="mcard-actions"><button class="btn btn-ghost btn-sm" onclick="openModal('booking-modal')">View</button></div></div>
-          </div>
-        </div>
+        <div class="ph"><div><div class="ph-title">All Bookings</div><div class="ph-sub" id="booking-count">0 total bookings</div></div><button class="btn btn-ghost" onclick="loadData()">🔄 Refresh</button></div>
+        <div class="tcard"><div class="tcard-hdr"><div class="tcard-title">Booking Log</div><select class="fsel" id="booking-filter" onchange="filterBookings()"><option value="all">All</option><option value="pending">Pending</option><option value="inrepair">In Repair</option><option value="completed">Completed</option></select></div>
+        <div class="dtable-wrap"><table><thead><tr><th>ID</th><th>Customer</th><th>Device</th><th>Engineer</th><th>Status</th><th>Amount</th><th>Date</th><th>Action</th></tr></thead><tbody id="bookings-table-body"></tbody></table></div></div>
       </div>
 
-      <!-- DISPUTES PAGE -->
-      <div class="page" id="page-disputes">
-        <div class="ph"><div><div class="ph-title">Disputes</div><div class="ph-sub">3 open disputes requiring attention</div></div></div>
-        <div class="dispute-card">
-          <div class="disp-top"><div><div class="disp-id">#XF-0840 · Opened 1 day ago</div><div class="disp-title">Customer says phone not fully repaired</div></div><span class="pill p-dispute">⚠️ Open</span></div>
-          <div class="disp-parties"><div class="disp-party"><div class="dp-label">Customer</div>Sola Adebisi</div><div class="disp-party"><div class="dp-label">Engineer</div>Adebayo Suleiman</div><div class="disp-party"><div class="dp-label">Amount</div>₦18,000</div></div>
-          <div class="disp-desc">Customer claims screen was replaced but touch sensitivity is still poor on the left side. Engineer says repair was completed successfully.</div>
-          <div class="disp-actions"><button class="btn btn-success-ghost btn-sm" onclick="toast('Dispute resolved ✓')">✓ Resolve</button><button class="btn btn-danger-ghost btn-sm" onclick="toast('Escalated')">↑ Escalate</button><button class="btn btn-ghost btn-sm" onclick="openModal('booking-modal')">View Booking</button></div>
-        </div>
+      <!-- Payments Page -->
+      <div class="page" id="page-payments">
+        <div class="ph"><div><div class="ph-title">Payments</div><div class="ph-sub">Transaction history</div></div><button class="btn btn-ghost" onclick="exportPayments()">📊 Export CSV</button></div>
+        <div class="tcard"><div class="tcard-hdr"><div class="tcard-title">Transaction Log</div></div>
+        <div class="dtable-wrap"><table><thead><tr><th>Ref</th><th>Customer</th><th>Engineer</th><th>Amount</th><th>Commission</th><th>Payout</th><th>Status</th><th>Date</th></tr></thead><tbody id="payments-table-body"></tbody></table></div></div>
       </div>
+    </div>
+  </div>
+</div>
 
-      <!-- SETTINGS PAGE -->
-      <div class="page" id="page-settings">
-        <div class="ph"><div><div class="ph-title">Settings</div><div class="ph-sub">Configure Xpressfixing operations</div></div></div>
-        <div class="settings-grid">
-          <div class="settings-card">
-            <div class="settings-title">💰 Commission & Pricing</div>
-            <div class="det-row"><span class="det-label">Platform commission</span><span class="det-val" style="color:var(--accent);">20%</span></div>
-            <div class="det-row"><span class="det-label">Min. booking amount</span><span class="det-val">₦5,000</span></div>
-            <div class="det-row"><span class="det-label">Dispatch fee</span><span class="det-val">₦1,500</span></div>
-            <button class="btn btn-accent" style="width:100%;margin-top:20px;" onclick="toast('Settings saved!')">Save Changes</button>
-          </div>
-          <div class="settings-card">
-            <div class="settings-title">🏙️ Operating Cities</div>
-            <div class="det-row"><span class="det-label">Lagos</span><span class="pill p-active">● Active</span></div>
-            <div class="det-row"><span class="det-label">Abuja</span><span class="pill p-active">● Active</span></div>
-            <div class="det-row"><span class="det-label">Port Harcourt</span><span class="pill p-pending">● Coming Soon</span></div>
-            <button class="btn btn-ghost" style="width:100%;margin-top:20px;" onclick="toast('City added!')">+ Add City</button>
-          </div>
-        </div>
-      </div>
-
-    </div><!-- end content -->
-  </div><!-- end main -->
-</div><!-- end layout -->
-
-<!-- BOTTOM NAV (mobile) -->
-<nav class="bottom-nav" id="bnav">
-  <div class="bn-item active" id="bn-dashboard" onclick="showPage('dashboard',this);syncBnav('dashboard')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-    Home
-  </div>
-  <div class="bn-item" id="bn-bookings" onclick="showPage('bookings',this);syncBnav('bookings')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-    Bookings
-  </div>
-  <div class="bn-item" id="bn-disputes" onclick="showPage('disputes',this);syncBnav('disputes')">
-    <div class="bn-badge">3</div>
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-    Disputes
-  </div>
-  <div class="bn-item" id="bn-payments" onclick="showPage('payments',this);syncBnav('payments')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-    Payments
-  </div>
-  <div class="bn-item" id="bn-more" onclick="openSidebar()">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-    More
-  </div>
+<!-- Bottom Navigation (Mobile) -->
+<nav class="bottom-nav">
+  <div class="bn-item active" onclick="showPage('dashboard')">📊 Home</div>
+  <div class="bn-item" onclick="showPage('customers')">👥 Users</div>
+  <div class="bn-item" onclick="showPage('bookings')">📋 Jobs</div>
+  <div class="bn-item" onclick="showPage('payments')">💰 Payments</div>
+  <div class="bn-item" onclick="openSidebar()">☰ Menu</div>
 </nav>
 
-<!-- MODALS -->
-<div class="modal-overlay" id="booking-modal">
+<!-- Modals -->
+<div class="modal-overlay" id="engineer-modal"><div class="modal"><div class="modal-title">Engineer Details</div><div class="modal-sub" id="modal-engineer-name"></div><div id="engineer-details"></div><div class="modal-btns"><button class="btn btn-ghost" onclick="closeModal('engineer-modal')">Close</button><button class="btn btn-danger-ghost" id="engineer-action-btn" onclick="toggleEngineerStatus()">Action</button></div></div></div>
+<div class="modal-overlay" id="booking-modal"><div class="modal"><div class="modal-title">Booking Details</div><div class="modal-sub" id="modal-booking-id"></div><div id="booking-details"></div><div class="modal-btns"><button class="btn btn-ghost" onclick="closeModal('booking-modal')">Close</button><select id="booking-status-update" class="fsel" style="flex:1;" onchange="updateBookingStatus()"><option value="pending">Pending</option><option value="inrepair">In Repair</option><option value="completed">Completed</option></select></div></div></div>
+<div class="modal-overlay" id="banned-modal"><div class="modal"><div class="modal-title">🚫 Banned Engineers</div><div class="modal-sub">Permanently banned engineers</div><div id="banned-list"></div><div class="modal-btns"><button class="btn btn-ghost" onclick="closeModal('banned-modal')">Close</button></div></div></div>
+<div class="modal-overlay" id="customer-modal">
   <div class="modal">
-    <div class="modal-title">Booking #XF-0851</div>
-    <div class="modal-sub">Full booking details</div>
-    <div class="det-row"><span class="det-label">Customer</span><span class="det-val">Chidinma Obi</span></div>
-    <div class="det-row"><span class="det-label">Device</span><span class="det-val">iPhone 13 Pro</span></div>
-    <div class="det-row"><span class="det-label">Issues</span><span class="det-val">Screen crack, Battery drain</span></div>
-    <div class="det-row"><span class="det-label">Engineer</span><span class="det-val">Adebayo Suleiman</span></div>
-    <div class="det-row"><span class="det-label">Status</span><span class="det-val"><span class="pill p-new">New</span></span></div>
-    <div class="det-row"><span class="det-label">Amount</span><span class="det-val" style="color:var(--warning);">₦28,000</span></div>
+    <div class="modal-title">Customer Details</div>
+    <div class="modal-sub" id="modal-customer-name"></div>
+    <div id="customer-details"></div>
     <div class="modal-btns">
-      <button class="mbtn-close" onclick="closeModal('booking-modal')">Close</button>
-      <button class="mbtn-action" onclick="toast('Booking flagged');closeModal('booking-modal')">Flag Booking</button>
+      <button class="btn btn-ghost" onclick="closeModal('customer-modal')">Close</button>
+      <button class="btn btn-danger-ghost" id="customer-action-btn" onclick="toggleCustomerStatus()">Suspend</button>
     </div>
   </div>
 </div>
-
-<div class="modal-overlay" id="eng-modal">
-  <div class="modal">
-    <div class="modal-title">Adebayo Suleiman</div>
-    <div class="modal-sub">Engineer profile</div>
-    <div class="det-row"><span class="det-label">Speciality</span><span class="det-val">iPhone / iOS</span></div>
-    <div class="det-row"><span class="det-label">Location</span><span class="det-val">Lekki, Lagos</span></div>
-    <div class="det-row"><span class="det-label">Jobs Completed</span><span class="det-val">47</span></div>
-    <div class="det-row"><span class="det-label">Rating</span><span class="det-val">4.9 ⭐ (134 reviews)</span></div>
-    <div class="modal-btns">
-      <button class="mbtn-close" onclick="closeModal('eng-modal')">Close</button>
-      <button class="mbtn-action" style="background:var(--danger);" onclick="toast('Engineer suspended');closeModal('eng-modal')">Suspend Engineer</button>
-    </div>
-  </div>
-</div>
-
 <div id="toast"></div>
 
 <script>
-/* PAGE NAVIGATION */
-function showPage(id, el) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  const targetPage = document.getElementById('page-' + id);
-  if (targetPage) targetPage.classList.add('active');
+const API_URL = 'http://localhost:3000/api';
+let store = { customers: [], engineers: [], bookings: [], payments: [] };
+let currentEngineer = null;
+let currentBooking = null;
 
-  // sync sidebar highlight
-  document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
-  if (el && el.classList && el.classList.contains('sb-item')) {
-    el.classList.add('active');
-  } else {
-    document.querySelectorAll('.sb-item').forEach(i => {
-      if (i.getAttribute('onclick') && i.getAttribute('onclick').includes("'" + id + "'")) {
-        i.classList.add('active');
-      }
-    });
+// ===== AUTH =====
+function checkAuth() {
+  const user = localStorage.getItem('xpressfixing_current_user');
+  if (!user) { window.location.href = 'login.html'; return false; }
+  const userData = JSON.parse(user);
+  if (userData.role !== 'admin') { window.location.href = 'login.html'; return false; }
+  document.getElementById('admin-name').textContent = userData.name;
+  return true;
+}
+
+function logout() { localStorage.removeItem('xpressfixing_current_user'); window.location.href = '../public/index.html'; }
+
+// ===== HELPERS =====
+function formatCurrency(amount) { return `₦${amount.toLocaleString()}`; }
+function formatDate(dateString) { if (!dateString) return '—'; return new Date(dateString).toLocaleDateString('en-NG'); }
+
+function getStatusClass(status) {
+  const classes = { 'active': 'p-active', 'pending': 'p-pending', 'suspended': 'p-suspended', 'completed': 'p-completed', 'inrepair': 'p-active' };
+  return classes[status] || 'p-active';
+}
+function getStatusLabel(status) {
+  const labels = { 'active': 'Active', 'pending': 'Pending', 'suspended': 'Suspended', 'completed': 'Completed', 'inrepair': 'In Repair' };
+  return labels[status] || status;
+}
+
+function showToast(msg, isErr = false) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.style.background = isErr ? '#ff6b6b' : '#6c63ff';
+  toast.style.display = 'block';
+  setTimeout(() => toast.style.display = 'none', 3000);
+}
+
+function openModal(id) { document.getElementById(id)?.classList.add('open'); }
+function closeModal(id) { document.getElementById(id)?.classList.remove('open'); }
+
+// ===== API CALLS =====
+async function loadData() {
+  try {
+    console.log('🔄 Loading data...');
+    const [customersRes, engineersRes, bookingsRes, paymentsRes] = await Promise.all([
+      fetch(`${API_URL}/customers`), fetch(`${API_URL}/engineers`), fetch(`${API_URL}/bookings`), fetch(`${API_URL}/payments`)
+    ]);
+    store.customers = await customersRes.json();
+    store.engineers = await engineersRes.json();
+    store.bookings = await bookingsRes.json();
+    store.payments = await paymentsRes.json();
+     store.banned = store.banned || [];  // Initialize banned array if it doesn't exist
+    console.log('✅ Data loaded!', { customers: store.customers.length, engineers: store.engineers.length, bookings: store.bookings.length });
+    renderDashboard(); 
+    renderCustomers(); 
+    renderEngineers(); 
+    renderBookings(); 
+    renderPayments();
+    renderWorkflowTracking();
+  } catch (error) { 
+    console.error('❌ Error:', error); 
+    showToast('Cannot connect to backend', true); 
   }
+}
+
+function saveStore() {
+  localStorage.setItem('xpressfixing_data', JSON.stringify(store));
+}
+
+async function updateEngineer(id, updates) {
+  try {
+    const res = await fetch(`${API_URL}/engineers/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updates) });
+    if ((await res.json()).success) { await loadData(); showToast('Engineer updated'); }
+  } catch (error) { showToast('Update failed', true); }
+}
+
+async function deleteEngineer(id) {
+  try {
+    const res = await fetch(`${API_URL}/engineers/${id}`, { method: 'DELETE' });
+    if ((await res.json()).success) { await loadData(); showToast('Engineer banned'); }
+  } catch (error) { showToast('Ban failed', true); }
+}
+
+async function updateBookingStatus() {
+  if (currentBooking) {
+    const newStatus = document.getElementById('booking-status-update').value;
+    try {
+      const res = await fetch(`${API_URL}/bookings/${currentBooking.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: newStatus }) });
+      if ((await res.json()).success) { await loadData(); closeModal('booking-modal'); showToast('Booking updated'); }
+    } catch (error) { showToast('Update failed', true); }
+  }
+}
+
+// ===== RENDER FUNCTIONS =====
+function renderDashboard() {
+  document.getElementById('stat-customers').textContent = store.customers.length;
+  document.getElementById('stat-engineers').textContent = store.engineers.length;
+  document.getElementById('stat-bookings').textContent = store.bookings.length;
+  document.getElementById('stat-pending').textContent = store.engineers.filter(e => e.status === 'pending').length;
+  document.getElementById('stat-revenue').textContent = formatCurrency(store.payments.reduce((s, p) => s + p.amount, 0));
+  document.getElementById('date-display').textContent = new Date().toLocaleDateString('en-NG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  
+  const recent = [...store.bookings].slice(-5).reverse();
+  document.getElementById('recent-bookings').innerHTML = recent.length ? `<table><thead><tr><th>ID</th><th>Customer</th><th>Device</th><th>Status</th><th>Amount</th></tr></thead><tbody>${recent.map(b => `<tr><td class="td-mono">${b.id}</td><td>${b.customerName}</td><td>${b.device}</td><td><span class="pill ${getStatusClass(b.status)}">${getStatusLabel(b.status)}</span></td><td>${formatCurrency(b.amount || 0)}</td></tr>`).join('')}</tbody></table>` : '<p style="padding:20px;">No bookings yet</p>';
+}
+
+function renderCustomers() {
+  const filter = document.getElementById('customer-filter')?.value || 'all';
+  let filtered = store.customers;
+  if (filter !== 'all') filtered = filtered.filter(c => c.status === filter);
+  document.getElementById('customer-count').textContent = `${filtered.length} registered users`;
+  document.getElementById('customers-table-body').innerHTML = filtered.map(c => `<tr><td><div class="cell-user"><div class="cell-ava">👤</div><div><div class="td-name">${escapeHtml(c.name)}</div><div class="td-sub">${escapeHtml(c.email)}</div></div></div></td><td>${escapeHtml(c.phone || '—')}</td><td>${escapeHtml(c.location || '—')}</td><td class="td-mono">${c.bookingsCount || 0}</td><td><span class="pill ${getStatusClass(c.status)}">${getStatusLabel(c.status)}</span></td><td>${formatDate(c.createdAt)}</td><td><button class="btn btn-ghost btn-sm" onclick="viewCustomer(${c.id})">View</button></td></tr>`).join('');
+}
+
+function renderEngineers() {
+  const filter = document.getElementById('engineer-filter')?.value || 'all';
+  let filtered = store.engineers;
+  if (filter !== 'all') filtered = filtered.filter(e => e.status === filter);
+  document.getElementById('engineer-count').textContent = `${filtered.length} engineers (${store.engineers.filter(e => e.status === 'pending').length} pending)`;
+  document.getElementById('engineers-table-body').innerHTML = filtered.map(e => `<tr><td><div class="cell-user"><div class="cell-ava">🔧</div><div><div class="td-name">${escapeHtml(e.name)}</div><div class="td-sub">${escapeHtml(e.email)}</div></div></div></td><td>${escapeHtml(e.speciality || '—')}</td><td>${escapeHtml(e.location || '—')}</td><td class="td-mono">${e.jobsCompleted || 0}</td><td>${e.rating > 0 ? `⭐ ${e.rating}` : '—'}</td><td class="td-mono">${formatCurrency(e.earnings || 0)}</td><td><span class="pill ${getStatusClass(e.status)}">${getStatusLabel(e.status)}</span></td><td><div class="arow"><button class="btn btn-ghost btn-sm" onclick="viewEngineer(${e.id})">View</button>${e.status === 'pending' ? `<button class="btn btn-success-ghost btn-sm" onclick="approveEngineer(${e.id})">Approve</button>` : e.status === 'active' ? `<button class="btn btn-danger-ghost btn-sm" onclick="suspendEngineer(${e.id})">Suspend</button>` : `<button class="btn btn-success-ghost btn-sm" onclick="activateEngineer(${e.id})">Activate</button>`}<button class="btn btn-danger-ghost btn-sm" onclick="banEngineer(${e.id})">Ban</button></div></td>`).join('');
+}
+
+function renderBookings() {
+  const filter = document.getElementById('booking-filter')?.value || 'all';
+  let filtered = store.bookings;
+  if (filter !== 'all') filtered = filtered.filter(b => b.status === filter);
+  document.getElementById('booking-count').textContent = `${filtered.length} total bookings`;
+  document.getElementById('bookings-table-body').innerHTML = filtered.map(b => `<tr><td class="td-mono">${b.id}</td><td>${escapeHtml(b.customerName)}</td><td>${escapeHtml(b.device)}</td><td>${escapeHtml(b.engineerName || 'Not assigned')}</td><td><span class="pill ${getStatusClass(b.status)}">${getStatusLabel(b.status)}</span></td><td class="td-mono">${formatCurrency(b.amount || 0)}</td><td>${formatDate(b.createdAt)}</td><td><button class="btn btn-ghost btn-sm" onclick="viewBooking('${b.id}')">View</button></td>`).join('');
+}
+
+function renderPayments() {
+  document.getElementById('payments-table-body').innerHTML = store.payments.map(p => `<td><td class="td-mono">${p.id}</td><td>${escapeHtml(p.customerName)}</td><td>${escapeHtml(p.engineerName)}</td><td class="td-mono">${formatCurrency(p.amount)}</td><td style="color:var(--accent);">${formatCurrency(p.commission)}</td><td style="color:var(--success);">${formatCurrency(p.payout)}</td><td><span class="pill ${getStatusClass(p.status)}">${getStatusLabel(p.status)}</span></td><td>${formatDate(p.createdAt)}</td>`).join('');
+}
+
+// ===== WORKFLOW TRACKING =====
+function renderWorkflowTracking() {
+  const bookings = store.bookings || [];
+  const workflowStages = {
+    'pending_engineer': 0,
+    'negotiating': 0,
+    'dispatch_pickup': 0,
+    'with_engineer': 0,
+    'inrepair': 0,
+    'dispatch_return': 0,
+    'completed': 0
+  };
+  
+  bookings.forEach(b => { 
+    if (workflowStages[b.status] !== undefined) workflowStages[b.status]++; 
+  });
+  
+  const workflowHtml = `
+    <div class="stats-row" style="margin-top: 20px;">
+      <div class="stat-card-large">
+        <h3>📊 Workflow Tracking</h3>
+        <div class="stat-list">
+          <div class="stat-list-item"><span>⏳ New Requests</span><span>${workflowStages.pending_engineer}</span></div>
+          <div class="stat-list-item"><span>💬 Negotiating</span><span>${workflowStages.negotiating}</span></div>
+          <div class="stat-list-item"><span>🚚 Dispatch Pickup</span><span>${workflowStages.dispatch_pickup}</span></div>
+          <div class="stat-list-item"><span>🔧 With Engineer</span><span>${workflowStages.with_engineer}</span></div>
+          <div class="stat-list-item"><span>⚙️ In Repair</span><span>${workflowStages.inrepair}</span></div>
+          <div class="stat-list-item"><span>🚚 Returning</span><span>${workflowStages.dispatch_return}</span></div>
+          <div class="stat-list-item"><span>✅ Completed</span><span>${workflowStages.completed}</span></div>
+        </div>
+      </div>
+      <div class="stat-card-large">
+        <h3>⭐ Recent Ratings</h3>
+        <div class="stat-list" id="recent-ratings">
+          ${bookings.filter(b => b.customerRating).slice(-5).map(b => `
+            <div class="stat-list-item">
+              <span>${b.customerName} → ${b.engineerName}</span>
+              <span>${'★'.repeat(b.customerRating)} (${b.customerRating})</span>
+            </div>
+          `).join('') || '<div>No ratings yet</div>'}
+        </div>
+      </div>
+    </div>
+  `;
+  
+  const container = document.getElementById('workflow-tracking');
+  if (container) {
+    container.innerHTML = workflowHtml;
+  }
+}
+
+// ===== ACTIONS =====
+function viewCustomer(id) { 
+  const customer = store.customers.find(c => c.id === id);
+  if (customer) {
+    // Get customer's bookings
+    const customerBookings = store.bookings.filter(b => b.customerId === customer.id);
+    const activeBookings = customerBookings.filter(b => !['completed', 'cancelled'].includes(b.status));
+    const completedBookings = customerBookings.filter(b => b.status === 'completed');
+    
+    // Get customer's ratings given
+    const ratingsGiven = completedBookings.filter(b => b.customerRating).length;
+    const averageRating = completedBookings.reduce((sum, b) => sum + (b.customerRating || 0), 0) / (ratingsGiven || 1);
+    
+    document.getElementById('modal-customer-name').textContent = customer.name;
+    
+    document.getElementById('customer-details').innerHTML = `
+      <div class="det-row"><span class="det-label">📧 Email</span><span class="det-val">${escapeHtml(customer.email)}</span></div>
+      <div class="det-row"><span class="det-label">📞 Phone</span><span class="det-val">${escapeHtml(customer.phone || '—')}</span></div>
+      <div class="det-row"><span class="det-label">📍 Location</span><span class="det-val">${escapeHtml(customer.location || '—')}</span></div>
+      <div class="det-row"><span class="det-label">📅 Joined</span><span class="det-val">${formatDate(customer.createdAt)}</span></div>
+      <div class="det-row"><span class="det-label">✅ Status</span><span class="det-val"><span class="pill ${getStatusClass(customer.status)}">${getStatusLabel(customer.status)}</span></span></div>
+      
+      <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border);">
+        <strong>📊 Platform Activity</strong>
+      </div>
+      <div class="det-row"><span class="det-label">Total Bookings</span><span class="det-val">${customerBookings.length}</span></div>
+      <div class="det-row"><span class="det-label">Active Bookings</span><span class="det-val">${activeBookings.length}</span></div>
+      <div class="det-row"><span class="det-label">Completed Repairs</span><span class="det-val">${completedBookings.length}</span></div>
+      <div class="det-row"><span class="det-label">Total Spent</span><span class="det-val">${formatCurrency(customer.totalSpent || 0)}</span></div>
+      <div class="det-row"><span class="det-label">Ratings Given</span><span class="det-val">${ratingsGiven} (⭐ ${averageRating.toFixed(1)})</span></div>
+      
+      <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border);">
+        <strong>📋 Recent Bookings</strong>
+      </div>
+      <div id="customer-recent-bookings" style="max-height: 200px; overflow-y: auto;">
+        ${customerBookings.slice(-5).reverse().map(b => `
+          <div style="padding: 8px 0; border-bottom: 1px solid var(--border);">
+            <div style="display: flex; justify-content: space-between;">
+              <span style="font-size: 0.8rem;"><strong>${b.id}</strong> - ${b.device}</span>
+              <span class="pill ${getStatusClass(b.status)}" style="font-size: 0.65rem;">${getStatusLabel(b.status)}</span>
+            </div>
+            <div style="font-size: 0.7rem; color: var(--muted);">
+              ${formatDate(b.createdAt)} • ${b.engineerName ? `Engineer: ${b.engineerName}` : 'Waiting for engineer'}
+            </div>
+            ${b.customerRating ? `<div style="font-size: 0.7rem; color: var(--warning);">Rating: ${'★'.repeat(b.customerRating)}</div>` : ''}
+          </div>
+        `).join('') || '<div style="padding: 8px; color: var(--muted);">No bookings yet</div>'}
+      </div>
+    `;
+    
+    // Update the action button
+    const actionBtn = document.getElementById('customer-action-btn');
+    if (customer.status === 'active') {
+      actionBtn.textContent = 'Suspend Customer';
+      actionBtn.className = 'btn btn-danger-ghost';
+    } else {
+      actionBtn.textContent = 'Activate Customer';
+      actionBtn.className = 'btn btn-success-ghost';
+    }
+    
+    openModal('customer-modal');
+  }
+}
+function viewEngineer(id) { 
+  currentEngineer = store.engineers.find(e => e.id === id); 
+  if (currentEngineer) { 
+    document.getElementById('modal-engineer-name').textContent = currentEngineer.name; 
+    
+    document.getElementById('engineer-details').innerHTML = `
+      <div class="det-row"><span class="det-label">Email</span><span class="det-val">${escapeHtml(currentEngineer.email)}</span></div>
+      <div class="det-row"><span class="det-label">Phone</span><span class="det-val">${escapeHtml(currentEngineer.phone || '—')}</span></div>
+      <div class="det-row"><span class="det-label">Speciality</span><span class="det-val">${escapeHtml(currentEngineer.speciality || '—')}</span></div>
+      <div class="det-row"><span class="det-label">Location</span><span class="det-val">${escapeHtml(currentEngineer.location || '—')}</span></div>
+      <div class="det-row"><span class="det-label">Experience</span><span class="det-val">${escapeHtml(currentEngineer.experience || '—')}</span></div>
+      <div class="det-row"><span class="det-label">Motivation</span><span class="det-val" style="text-align: left;">${escapeHtml(currentEngineer.motivation || '—')}</span></div>
+      <div class="det-row"><span class="det-label">Portfolio</span><span class="det-val">${currentEngineer.portfolio ? `<a href="${currentEngineer.portfolio}" target="_blank" style="color: var(--accent);">View Portfolio</a>` : '—'}</span></div>
+      <div class="det-row"><span class="det-label">Jobs Completed</span><span class="det-val">${currentEngineer.jobsCompleted || 0}</span></div>
+      <div class="det-row"><span class="det-label">Rating</span><span class="det-val">${currentEngineer.rating > 0 ? `⭐ ${currentEngineer.rating}` : 'No reviews yet'}</span></div>
+      <div class="det-row"><span class="det-label">Total Earnings</span><span class="det-val">${formatCurrency(currentEngineer.earnings || 0)}</span></div>
+      <div class="det-row"><span class="det-label">Applied Date</span><span class="det-val">${formatDate(currentEngineer.appliedAt)}</span></div>
+      <div class="det-row"><span class="det-label">Status</span><span class="det-val"><span class="pill ${getStatusClass(currentEngineer.status)}">${getStatusLabel(currentEngineer.status)}</span></span></div>
+    `;
+    
+    // Update the action button based on status
+    const actionBtn = document.getElementById('engineer-action-btn');
+    if (currentEngineer.status === 'pending') {
+      actionBtn.textContent = 'Approve Engineer';
+      actionBtn.className = 'btn btn-success-ghost';
+    } else if (currentEngineer.status === 'active') {
+      actionBtn.textContent = 'Suspend Engineer';
+      actionBtn.className = 'btn btn-danger-ghost';
+    } else if (currentEngineer.status === 'suspended') {
+      actionBtn.textContent = 'Activate Engineer';
+      actionBtn.className = 'btn btn-success-ghost';
+    }
+    
+    openModal('engineer-modal'); 
+  } 
+}
+function viewBooking(id) { currentBooking = store.bookings.find(b => b.id === id); if (currentBooking) { document.getElementById('modal-booking-id').textContent = currentBooking.id; document.getElementById('booking-details').innerHTML = `<div class="det-row"><span class="det-label">Customer</span><span class="det-val">${currentBooking.customerName}</span></div><div class="det-row"><span class="det-label">Device</span><span class="det-val">${currentBooking.device}</span></div><div class="det-row"><span class="det-label">Issues</span><span class="det-val">${currentBooking.issues?.join(', ') || '—'}</span></div><div class="det-row"><span class="det-label">Engineer</span><span class="det-val">${currentBooking.engineerName || 'Not assigned'}</span></div><div class="det-row"><span class="det-label">Amount</span><span class="det-val">${formatCurrency(currentBooking.amount || 0)}</span></div>`; document.getElementById('booking-status-update').value = currentBooking.status; openModal('booking-modal'); } }
+
+function approveEngineer(id) { if (confirm('Approve this engineer?')) updateEngineer(id, { status: 'active' }); }
+function suspendEngineer(id) { if (confirm('Suspend this engineer?')) updateEngineer(id, { status: 'suspended' }); }
+function activateEngineer(id) { updateEngineer(id, { status: 'active' }); }
+async function banEngineer(id) { 
+  if (confirm('⚠️ PERMANENT: Ban this engineer? They will be permanently removed and cannot apply again.')) {
+    const engineer = store.engineers.find(e => e.id === id);
+    if (engineer) {
+      // Add to banned list
+      store.banned = store.banned || [];
+      store.banned.push({
+        email: engineer.email,
+        name: engineer.name,
+        bannedAt: new Date().toISOString(),
+        reason: 'Banned by admin'
+      });
+      
+      // Remove from engineers array
+      store.engineers = store.engineers.filter(e => e.id !== id);
+      
+      // Remove from auth users
+      let users = JSON.parse(localStorage.getItem('xpressfixing_users')) || [];
+      users = users.filter(u => u.email !== engineer.email);
+      localStorage.setItem('xpressfixing_users', JSON.stringify(users));
+      
+      saveStore();
+      await loadData();
+      showToast(`${engineer.name} has been permanently banned.`);
+    }
+  }
+}
+function toggleEngineerStatus() { if (currentEngineer) { if (currentEngineer.status === 'pending') approveEngineer(currentEngineer.id); else if (currentEngineer.status === 'active') suspendEngineer(currentEngineer.id); else if (currentEngineer.status === 'suspended') activateEngineer(currentEngineer.id); closeModal('engineer-modal'); } }
+
+function showBannedEngineers() { 
+  // Get banned engineers from store (not localStorage)
+  const banned = store.banned || [];
+  
+  const bannedListHtml = banned.length ? banned.map(b => `
+    <div class="det-row">
+      <div>
+        <strong>${escapeHtml(b.name)}</strong><br>
+        <small style="color: var(--muted);">${b.email}</small>
+      </div>
+      <div style="text-align: right;">
+        <small>Banned: ${new Date(b.bannedAt).toLocaleDateString()}</small><br>
+        <button class="btn btn-sm btn-danger-ghost" onclick="unbanEngineer('${b.email}')">Unban</button>
+      </div>
+    </div>
+  `).join('') : '<p style="text-align:center;">No banned engineers</p>';
+  
+  document.getElementById('banned-list').innerHTML = bannedListHtml;
+  openModal('banned-modal'); 
+}
+function unbanEngineer(email) { 
+  // Remove from store.banned array
+  if (store.banned) {
+    store.banned = store.banned.filter(b => b.email !== email);
+    saveStore(); // Make sure you have a saveStore function
+    showBannedEngineers(); 
+    showToast('Engineer unbanned');
+  }
+}
+function exportPayments() { let csv = "ID,Customer,Engineer,Amount,Commission,Payout,Status,Date\n"; store.payments.forEach(p => csv += `${p.id},${p.customerName},${p.engineerName},${p.amount},${p.commission},${p.payout},${p.status},${p.createdAt}\n`); const blob = new Blob([csv], { type: 'text/csv' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'payments.csv'; a.click(); URL.revokeObjectURL(blob.url); showToast('Payments exported'); }
+
+function filterCustomers() { renderCustomers(); }
+function filterEngineers() { renderEngineers(); }
+function filterBookings() { renderBookings(); }
+function globalSearch() { renderCustomers(); renderEngineers(); renderBookings(); }
+function refreshAllData() { loadData(); }
+
+function showPage(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(`page-${pageId}`)?.classList.add('active');
+  document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
+  document.querySelectorAll('.bn-item').forEach(i => i.classList.remove('active'));
   closeSidebar();
 }
+function openSidebar() { document.getElementById('sidebar')?.classList.add('open'); document.getElementById('sb-overlay')?.classList.add('open'); }
+function closeSidebar() { document.getElementById('sidebar')?.classList.remove('open'); document.getElementById('sb-overlay')?.classList.remove('open'); }
 
-/* BOTTOM NAV SYNC */
-function syncBnav(id) {
-  document.querySelectorAll('.bn-item').forEach(i => i.classList.remove('active'));
-  const el = document.getElementById('bn-' + id);
-  if (el) el.classList.add('active');
-}
+function escapeHtml(text) { if (!text) return ''; const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
 
-/* SIDEBAR */
-function openSidebar() {
-  const sidebar = document.getElementById('sidebar');
-  const overlay = document.getElementById('sb-overlay');
-  if (sidebar) sidebar.classList.add('open');
-  if (overlay) overlay.classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function closeSidebar() {
-  const sidebar = document.getElementById('sidebar');
-  const overlay = document.getElementById('sb-overlay');
-  if (sidebar) sidebar.classList.remove('open');
-  if (overlay) overlay.classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-/* MODALS */
-function openModal(id) {
-  const modal = document.getElementById(id);
-  if (modal) modal.classList.add('open');
-}
-function closeModal(id) {
-  const modal = document.getElementById(id);
-  if (modal) modal.classList.remove('open');
-}
-
-// Close modal when clicking overlay
-document.querySelectorAll('.modal-overlay').forEach(m => {
-  m.addEventListener('click', e => {
-    if (e.target === m) m.classList.remove('open');
-  });
-});
-
-/* TOAST */
-let toastTimeout;
-function toast(msg) {
-  const el = document.getElementById('toast');
-  if (!el) return;
-  el.innerHTML = msg;
-  el.style.display = 'block';
-  clearTimeout(toastTimeout);
-  toastTimeout = setTimeout(() => {
-    el.style.display = 'none';
-  }, 2800);
-}
-
-/* Close sidebar on window resize if open */
-window.addEventListener('resize', function() {
-  if (window.innerWidth > 1024) {
-    closeSidebar();
-  }
-});
-
-/* Initialize */
-document.addEventListener('DOMContentLoaded', function() {
-  // Set default active tab
-  showPage('dashboard');
-});
+document.addEventListener('DOMContentLoaded', () => { if (checkAuth()) loadData(); });
+document.querySelectorAll('.modal-overlay').forEach(m => m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); }));
 </script>
 </body>
 </html>

@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Xpressfixing — Engineer Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #0d0d14;
+  --surface: #13131e;
+  --card: #1a1a28;
+  --card2: #1f1f30;
+  --border: #272738;
+  --accent: #ffb84d;
+  --accent-2: #ff9f4a;
+  --accent-soft: rgba(255,184,77,0.12);
+  --text: #f0f0fa;
+  --muted: #6b6b8f;
+  --danger: #ff6b6b;
+  --warning: #ffb84d;
+  --success: #00d4aa;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  overflow-x: hidden;
+}
+
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  backdrop-filter: blur(20px);
+  background: rgba(13,13,20,0.85);
+  border-bottom: 1px solid var(--border);
+  z-index: 1000;
+}
+
+.logo { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; cursor: pointer; }
+.logo span { color: var(--accent); }
+
+.nav-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  position: relative;
+}
+
+.btn-outline { padding: 8px 20px; border: 1px solid var(--accent); border-radius: 100px; color: var(--accent); background: transparent; cursor: pointer; transition: all 0.3s ease; font-weight: 500; }
+.btn-outline:hover { background: var(--accent); color: #fff; }
+.logout-btn { background: rgba(255,107,107,0.15); border: 1px solid rgba(255,107,107,0.3); color: var(--danger); }
+.logout-btn:hover { background: rgba(255,107,107,0.25); }
+
+.notification-icon {
+  position: relative;
+  display: inline-block;
+}
+
+.unread-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: var(--danger);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 50%;
+  min-width: 18px;
+  text-align: center;
+  border: 2px solid var(--card);
+}
+
+.container { max-width: 1200px; margin: 0 auto; padding: 80px 24px 40px; }
+.welcome-section { background: linear-gradient(135deg, var(--accent-soft), transparent); border-radius: 24px; padding: 32px; margin-bottom: 32px; }
+.welcome-section h1 { font-family: 'Syne', sans-serif; font-size: 1.8rem; margin-bottom: 8px; }
+.welcome-section p { color: var(--muted); }
+
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 32px; }
+.stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; text-align: center; }
+.stat-value { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; color: var(--accent); }
+.stat-label { color: var(--muted); font-size: 0.8rem; margin-top: 4px; }
+
+.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+.section-header h2 { font-family: 'Syne', sans-serif; font-size: 1.3rem; }
+
+.tabs { display: flex; gap: 8px; background: var(--surface); border-radius: 12px; padding: 4px; }
+.tab { padding: 8px 20px; background: transparent; border: none; color: var(--muted); cursor: pointer; border-radius: 8px; transition: all 0.3s ease; }
+.tab.active { background: var(--card); color: var(--accent); }
+
+.jobs-list { display: flex; flex-direction: column; gap: 16px; }
+.job-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; transition: all 0.3s ease; }
+.job-card:hover { border-color: var(--accent); transform: translateX(4px); }
+.job-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; }
+.job-id { font-family: 'Courier New', monospace; font-size: 0.8rem; color: var(--muted); }
+.job-customer { font-weight: 700; font-size: 1rem; }
+.job-status { display: inline-block; padding: 4px 12px; border-radius: 100px; font-size: 0.7rem; font-weight: 600; }
+.status-pending_engineer { background: rgba(108,99,255,0.15); color: #6c63ff; }
+.status-negotiating { background: rgba(255,184,77,0.15); color: var(--warning); }
+.status-payment_pending { background: rgba(108,99,255,0.15); color: #6c63ff; }
+.status-payment_completed { background: rgba(0,212,170,0.15); color: var(--success); }
+.status-inrepair { background: rgba(0,212,170,0.15); color: var(--success); }
+.status-dispatch_return { background: rgba(108,99,255,0.15); color: #6c63ff; }
+.status-completed { background: rgba(255,255,255,0.1); color: var(--muted); }
+
+.job-details { color: var(--muted); font-size: 0.85rem; margin-bottom: 12px; }
+.job-details span { margin-right: 16px; }
+.job-price { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 800; color: var(--warning); }
+.job-actions { margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
+
+.btn-primary { padding: 10px 20px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); border: none; border-radius: 10px; color: #001b12; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(255,184,77,0.3); }
+.btn-sm { padding: 6px 14px; font-size: 0.75rem; }
+.btn-success { background: rgba(0,212,170,0.2); border: 1px solid var(--success); color: var(--success); }
+
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 28px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
+.modal-title { font-size: 1.2rem; font-weight: 800; margin-bottom: 20px; }
+.price-input { margin: 16px 0; }
+.price-input input { width: 100%; padding: 12px; font-size: 1.2rem; text-align: center; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; color: var(--text); }
+.modal-btns { display: flex; gap: 12px; margin-top: 24px; }
+
+.chat-messages {
+  min-height: 250px;
+  max-height: 350px;
+  overflow-y: auto;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: var(--surface);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chat-message {
+  margin-bottom: 8px;
+  padding: 10px 14px;
+  border-radius: 16px;
+  max-width: 80%;
+  word-wrap: break-word;
+}
+
+.chat-message.engineer {
+  background: var(--accent);
+  color: #001b12;
+  margin-left: auto;
+  text-align: right;
+  border-bottom-right-radius: 4px;
+}
+
+.chat-message.customer {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  text-align: left;
+  border-bottom-left-radius: 4px;
+}
+
+.chat-message small {
+  font-size: 0.65rem;
+  opacity: 0.7;
+  display: block;
+  margin-top: 4px;
+}
+
+.chat-input-area {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.chat-input-area input {
+  flex: 1;
+  padding: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+}
+
+#toast { display: none; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--accent); color: #001b12; padding: 12px 24px; border-radius: 12px; font-weight: 600; z-index: 3000; white-space: nowrap; }
+
+@media (max-width: 768px) {
+  .container { padding: 70px 16px 30px; }
+  .welcome-section h1 { font-size: 1.3rem; }
+  .section-header { flex-direction: column; align-items: stretch; }
+  .tabs { justify-content: center; }
+  .job-header { flex-direction: column; }
+  #toast { white-space: normal; text-align: center; max-width: 90%; }
+}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="logo" onclick="window.location.href='../public/index.html'">xpress<span>fixing</span></div>
+  <div class="nav-actions">
+    <div class="notification-icon">
+      <button class="btn-outline" id="chat-notification-btn" onclick="scrollToJobs()">💬</button>
+      <span id="total-unread-badge" class="unread-badge" style="display: none;">0</span>
+    </div>
+    <button class="btn-outline logout-btn" onclick="logout()">🚪 Logout</button>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="welcome-section">
+    <h1 id="welcome-message">Welcome back!</h1>
+    <p>Manage your repair jobs - customers are waiting for your expertise</p>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-value" id="total-earnings">₦0</div><div class="stat-label">Total Earnings</div></div>
+    <div class="stat-card"><div class="stat-value" id="completed-jobs">0</div><div class="stat-label">Completed Jobs</div></div>
+    <div class="stat-card"><div class="stat-value" id="active-jobs">0</div><div class="stat-label">Active Jobs</div></div>
+    <div class="stat-card"><div class="stat-value" id="rating">0.0★</div><div class="stat-label">Rating</div></div>
+  </div>
+
+  <div class="section-header">
+    <h2>🔧 My Jobs</h2>
+    <div class="tabs">
+      <button class="tab active" onclick="filterJobs('all')">All</button>
+      <button class="tab" onclick="filterJobs('pending')">New Requests</button>
+      <button class="tab" onclick="filterJobs('active')">Active</button>
+      <button class="tab" onclick="filterJobs('completed')">Completed</button>
+    </div>
+  </div>
+  <div id="jobs-container" class="jobs-list">
+    <p style="text-align: center; padding: 40px; color: var(--muted);">Loading your jobs...</p>
+  </div>
+</div>
+
+<!-- Quote Modal -->
+<div class="modal-overlay" id="quote-modal">
+  <div class="modal">
+    <div class="modal-title">💰 Set Price Quote</div>
+    <div id="quote-booking-info" style="color: var(--muted); margin-bottom: 16px;"></div>
+    <div class="price-input">
+      <input type="number" id="quote-amount" placeholder="Enter amount (₦)">
+    </div>
+    <div class="modal-btns">
+      <button class="btn-outline btn-sm" onclick="closeModal('quote-modal')">Cancel</button>
+      <button class="btn-primary btn-sm" onclick="submitQuote()">Send Quote</button>
+    </div>
+  </div>
+</div>
+
+<!-- Chat Modal -->
+<div class="modal-overlay" id="chat-modal">
+  <div class="modal">
+    <div class="modal-title">💬 Chat with Customer</div>
+    <div id="chat-customer-name" style="color: var(--muted); margin-bottom: 12px;"></div>
+    <div id="chat-messages" class="chat-messages"></div>
+    <div class="chat-input-area">
+      <input type="text" id="chat-input" placeholder="Type your message...">
+      <button class="btn-primary" onclick="sendChatMessage()">Send</button>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-outline btn-sm" onclick="closeChatModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const API_URL = 'http://localhost:3000/api';
+let currentUser = null;
+let store = { bookings: [] };
+let currentFilter = 'all';
+let currentJobForQuote = null;
+let currentChatBooking = null;
+let chatRefreshInterval = null;
+let unreadInterval = null;
+
+// ===== AUTHENTICATION =====
+function checkAuth() {
+  const user = localStorage.getItem('xpressfixing_current_user');
+  if (!user) { window.location.href = 'login.html'; return false; }
+  currentUser = JSON.parse(user);
+  if (currentUser.role !== 'engineer') { window.location.href = 'login.html'; return false; }
+  return true;
+}
+
+function logout() {
+  localStorage.removeItem('xpressfixing_current_user');
+  window.location.href = '../public/index.html';
+}
+
+function scrollToJobs() {
+  document.getElementById('jobs-container').scrollIntoView({ behavior: 'smooth' });
+}
+
+// ===== HELPERS =====
+function formatCurrency(amount) { return `₦${amount.toLocaleString()}`; }
+function formatDate(dateString) { return new Date(dateString).toLocaleDateString('en-NG', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); }
+
+function getStatusClass(status) {
+  const classes = {
+    'pending_engineer': 'status-pending_engineer',
+    'negotiating': 'status-negotiating',
+    'payment_pending': 'status-payment_pending',
+    'payment_completed': 'status-payment_completed',
+    'inrepair': 'status-inrepair',
+    'dispatch_return': 'status-dispatch_return',
+    'completed': 'status-completed'
+  };
+  return classes[status] || 'status-pending_engineer';
+}
+
+function getStatusLabel(status) {
+  const labels = {
+    'pending_engineer': 'New Request - Set Price',
+    'negotiating': 'Negotiating Price',
+    'payment_pending': 'Awaiting Payment',
+    'payment_completed': 'Payment Confirmed - Ready to Start',
+    'inrepair': '🔧 In Repair',
+    'dispatch_return': 'Returning to Customer',
+    'completed': 'Completed'
+  };
+  return labels[status] || status;
+}
+
+function showToast(message, isError = false) {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.style.background = isError ? 'var(--danger)' : 'var(--accent)';
+  toast.style.display = 'block';
+  setTimeout(() => { toast.style.display = 'none'; }, 3000);
+}
+
+function openModal(modalId) { document.getElementById(modalId).classList.add('open'); }
+function closeModal(modalId) { document.getElementById(modalId).classList.remove('open'); }
+
+// ===== LOAD ENGINEER'S JOBS =====
+async function loadMyJobs() {
+  try {
+    // Get engineer's current data for earnings
+    const engineerResponse = await fetch(`${API_URL}/engineers/${currentUser.id}`);
+    const engineerData = await engineerResponse.json();
+    currentUser.earnings = engineerData.earnings || 0;
+    currentUser.jobsCompleted = engineerData.jobsCompleted || 0;
+    
+    const response = await fetch(`${API_URL}/bookings/engineer/${currentUser.id}`);
+    store.bookings = await response.json();
+    updateStats();
+    renderJobs();
+  } catch (error) {
+    console.error('Error loading jobs:', error);
+    document.getElementById('jobs-container').innerHTML = '<p style="text-align: center; padding: 40px; color: var(--muted);">Failed to load jobs. Make sure backend is running.</p>';
+  }
+}
+
+function updateStats() {
+  const completedJobs = store.bookings.filter(b => b.status === 'completed');
+  const activeJobs = store.bookings.filter(b => !['pending_engineer', 'completed', 'cancelled'].includes(b.status));
+  const totalEarnings = currentUser.earnings || 0;
+  const avgRating = completedJobs.length > 0 
+    ? (completedJobs.reduce((sum, job) => sum + (job.customerRating || 0), 0) / completedJobs.length).toFixed(1)
+    : 0;
+  
+  document.getElementById('total-earnings').textContent = formatCurrency(totalEarnings);
+  document.getElementById('completed-jobs').textContent = completedJobs.length;
+  document.getElementById('active-jobs').textContent = activeJobs.length;
+  document.getElementById('rating').textContent = avgRating > 0 ? `${avgRating}★` : 'No ratings yet';
+}
+
+function renderJobs() {
+  const container = document.getElementById('jobs-container');
+  let myJobs = [...store.bookings].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  
+  if (currentFilter === 'pending') myJobs = myJobs.filter(j => j.status === 'pending_engineer');
+  else if (currentFilter === 'active') myJobs = myJobs.filter(j => !['pending_engineer', 'completed', 'cancelled'].includes(j.status));
+  else if (currentFilter === 'completed') myJobs = myJobs.filter(j => j.status === 'completed');
+  
+  if (myJobs.length === 0) {
+    container.innerHTML = `<div style="text-align: center; padding: 40px; color: var(--muted);">📭 No jobs found</div>`;
+    return;
+  }
+  
+  container.innerHTML = myJobs.map(job => `
+    <div class="job-card">
+      <div class="job-header">
+        <div>
+          <span class="job-id">${job.id}</span>
+          <div class="job-customer">${escapeHtml(job.customerName)}</div>
+        </div>
+        <span class="job-status ${getStatusClass(job.status)}">${getStatusLabel(job.status)}</span>
+      </div>
+      <div class="job-details">
+        <span>📱 ${escapeHtml(job.device)} ${escapeHtml(job.model || '')}</span>
+        <span>📍 ${escapeHtml(job.address?.split(',')[0] || 'Address pending')}</span>
+        <span>📅 ${formatDate(job.createdAt)}</span>
+      </div>
+      <div class="job-details">
+        <span>🔧 Issues: ${job.issues?.join(', ') || 'Not specified'}</span>
+      </div>
+      <div class="job-price">${job.amount ? formatCurrency(job.amount) : 'Awaiting price'}</div>
+      <div class="job-actions">
+        ${job.status === 'pending_engineer' ? `<button class="btn-primary btn-sm" onclick="openQuoteModal('${job.id}')">💰 Set Price</button>` : ''}
+        ${job.status === 'negotiating' ? `<button class="btn-primary btn-sm" onclick="openQuoteModal('${job.id}')">💰 Update Price</button>` : ''}
+        ${job.status === 'payment_completed' ? `<button class="btn-primary btn-sm" onclick="startRepair('${job.id}')">🔧 Start Repair</button>` : ''}
+        ${job.status === 'inrepair' ? `<button class="btn-success btn-sm" onclick="completeRepair('${job.id}')">✓ Complete Repair</button>` : ''}
+        <div style="position: relative; display: inline-block;">
+          <button class="btn-outline btn-sm" onclick="openChat('${job.id}')">💬 Chat</button>
+          <span id="unread-badge-${job.id}" class="unread-badge" style="display: none;">0</span>
+        </div>
+        <button class="btn-outline btn-sm" onclick="viewJobDetails('${job.id}')">Details</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterJobs(filter) {
+  currentFilter = filter;
+  document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+  if (filter === 'all') document.querySelector('.tab:first-child').classList.add('active');
+  else if (filter === 'pending') document.querySelector('.tab:nth-child(2)').classList.add('active');
+  else if (filter === 'active') document.querySelector('.tab:nth-child(3)').classList.add('active');
+  else if (filter === 'completed') document.querySelector('.tab:nth-child(4)').classList.add('active');
+  renderJobs();
+}
+
+function viewJobDetails(jobId) {
+  const job = store.bookings.find(b => b.id === jobId);
+  if (job) {
+    alert(`
+Job: ${job.id}
+Customer: ${job.customerName}
+Device: ${job.device} ${job.model || ''}
+Issues: ${job.issues?.join(', ') || 'Not specified'}
+Address: ${job.address || 'Pending'}
+Description: ${job.issueDescription || 'None'}
+Booked: ${formatDate(job.createdAt)}
+Status: ${getStatusLabel(job.status)}
+Your Quote: ${job.amount ? formatCurrency(job.amount) : 'Not set'}
+    `);
+  }
+}
+
+// ===== PRICE QUOTE =====
+function openQuoteModal(bookingId) {
+  const booking = store.bookings.find(b => b.id === bookingId);
+  if (booking && booking.engineerId === currentUser.id) {
+    currentJobForQuote = booking;
+    document.getElementById('quote-booking-info').innerHTML = `
+      <strong>${escapeHtml(booking.customerName)}</strong><br>
+      ${escapeHtml(booking.device)} ${escapeHtml(booking.model || '')}<br>
+      Issues: ${booking.issues?.join(', ') || 'Not specified'}<br>
+      <strong>Current Quote:</strong> ${booking.amount ? formatCurrency(booking.amount) : 'Not set'}
+    `;
+    document.getElementById('quote-amount').value = booking.amount || '';
+    openModal('quote-modal');
+  }
+}
+
+async function submitQuote() {
+  const amount = parseInt(document.getElementById('quote-amount').value);
+  if (isNaN(amount) || amount < 1000) {
+    showToast('Please enter a valid amount (minimum ₦1,000)', true);
+    return;
+  }
+  
+  if (currentJobForQuote) {
+    try {
+      const newStatus = currentJobForQuote.status === 'pending_engineer' ? 'negotiating' : currentJobForQuote.status;
+      const response = await fetch(`${API_URL}/bookings/${currentJobForQuote.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: amount, status: newStatus })
+      });
+      const data = await response.json();
+      if (data.success) {
+        closeModal('quote-modal');
+        await loadMyJobs();
+        showToast(`Quote of ${formatCurrency(amount)} sent to customer`);
+      }
+    } catch (error) { showToast('Failed to send quote', true); }
+  }
+}
+
+// ===== REPAIR WORKFLOW ACTIONS =====
+async function startRepair(bookingId) {
+  if (confirm('Start working on this repair?')) {
+    try {
+      const response = await fetch(`${API_URL}/bookings/${bookingId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'inrepair' })
+      });
+      const data = await response.json();
+      if (data.success) {
+        await loadMyJobs();
+        showToast('Repair started! Customer has been notified.');
+      }
+    } catch (error) {
+      showToast('Failed to start repair', true);
+    }
+  }
+}
+
+async function completeRepair(bookingId) {
+  if (confirm('Mark repair as completed? Device will be returned to customer.')) {
+    try {
+      const response = await fetch(`${API_URL}/bookings/${bookingId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'dispatch_return' })
+      });
+      const data = await response.json();
+      if (data.success) {
+        await loadMyJobs();
+        showToast('Repair completed! Device is being returned to customer.');
+      }
+    } catch (error) {
+      showToast('Failed to complete repair', true);
+    }
+  }
+}
+
+// ===== CHAT FUNCTIONS =====
+async function openChat(bookingId) {
+  const booking = store.bookings.find(b => b.id === bookingId);
+  if (booking) {
+    currentChatBooking = booking;
+    document.getElementById('chat-customer-name').innerHTML = `Chatting with <strong>${escapeHtml(booking.customerName)}</strong> about ${escapeHtml(booking.device)}`;
+    
+    await fetch(`${API_URL}/chats/${bookingId}/read`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: currentUser.id, role: 'engineer' })
+    });
+    
+    const badge = document.getElementById(`unread-badge-${bookingId}`);
+    if (badge) badge.style.display = 'none';
+    
+    await loadChatMessages(bookingId);
+    
+    if (chatRefreshInterval) clearInterval(chatRefreshInterval);
+    chatRefreshInterval = setInterval(() => loadChatMessages(bookingId), 3000);
+    
+    document.getElementById('chat-input').value = '';
+    openModal('chat-modal');
+  }
+}
+
+async function loadChatMessages(bookingId) {
+  try {
+    const response = await fetch(`${API_URL}/chats/${bookingId}?userId=${currentUser.id}&role=engineer`);
+    const data = await response.json();
+    const messages = data.messages || data;
+    const chatContainer = document.getElementById('chat-messages');
+    
+    if (!chatContainer) return;
+    
+    if (!messages || messages.length === 0) {
+      chatContainer.innerHTML = '<div style="text-align: center; color: var(--muted); padding: 40px;">No messages yet. Start the conversation!</div>';
+      return;
+    }
+    
+    const wasAtBottom = chatContainer.scrollHeight - chatContainer.scrollTop <= chatContainer.clientHeight + 100;
+    
+    chatContainer.innerHTML = messages.map(msg => `
+      <div class="chat-message ${msg.sender === 'engineer' ? 'engineer' : 'customer'}">
+        <strong>${msg.sender === 'engineer' ? 'You' : escapeHtml(msg.senderName)}:</strong> ${escapeHtml(msg.message)}
+        <small>${new Date(msg.timestamp).toLocaleTimeString()}</small>
+      </div>
+    `).join('');
+    
+    if (wasAtBottom) {
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+  } catch (error) {
+    console.error('Error loading messages:', error);
+  }
+}
+
+async function sendChatMessage() {
+  const message = document.getElementById('chat-input').value.trim();
+  if (!message || !currentChatBooking) return;
+  
+  try {
+    const response = await fetch(`${API_URL}/chats`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        bookingId: currentChatBooking.id,
+        sender: 'engineer',
+        senderName: currentUser.name,
+        message: message,
+        timestamp: Date.now()
+      })
+    });
+    
+    const data = await response.json();
+    if (data.success) {
+      document.getElementById('chat-input').value = '';
+      await loadChatMessages(currentChatBooking.id);
+    } else {
+      showToast('Failed to send message', true);
+    }
+  } catch (error) {
+    console.error('Error sending message:', error);
+    showToast('Cannot connect to server', true);
+  }
+}
+
+function closeChatModal() {
+  if (chatRefreshInterval) {
+    clearInterval(chatRefreshInterval);
+    chatRefreshInterval = null;
+  }
+  closeModal('chat-modal');
+}
+
+function escapeHtml(text) {
+  if (!text) return '';
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+// ===== UNREAD MESSAGE COUNTS =====
+async function loadUnreadCounts() {
+  try {
+    const response = await fetch(`${API_URL}/chats/unread/${currentUser.id}/engineer`);
+    const data = await response.json();
+    const unreadCounts = data.unreadCounts || {};
+    
+    for (const [bookingId, count] of Object.entries(unreadCounts)) {
+      const badge = document.getElementById(`unread-badge-${bookingId}`);
+      if (badge) {
+        badge.textContent = count > 99 ? '99+' : count;
+        badge.style.display = 'inline-flex';
+      }
+    }
+    
+    const totalUnread = Object.values(unreadCounts).reduce((a, b) => a + b, 0);
+    const navbarBadge = document.getElementById('total-unread-badge');
+    if (navbarBadge) {
+      if (totalUnread > 0) {
+        navbarBadge.textContent = totalUnread > 99 ? '99+' : totalUnread;
+        navbarBadge.style.display = 'inline-flex';
+      } else {
+        navbarBadge.style.display = 'none';
+      }
+    }
+  } catch (error) {
+    console.error('Error loading unread counts:', error);
+  }
+}
+
+function startUnreadPolling() {
+  if (unreadInterval) clearInterval(unreadInterval);
+  loadUnreadCounts();
+  unreadInterval = setInterval(loadUnreadCounts, 5000);
+}
+
+// ===== INITIALIZATION =====
+document.addEventListener('DOMContentLoaded', function() {
+  if (!checkAuth()) return;
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  document.getElementById('welcome-message').innerHTML = `${greeting}, ${currentUser.name.split(' ')[0]}! 🔧`;
+  loadMyJobs();
+  startUnreadPolling();
+});
+
+document.querySelectorAll('.modal-overlay').forEach(modal => {
+  modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('open'); });
+});
+</script>
+</body>
+</html>
