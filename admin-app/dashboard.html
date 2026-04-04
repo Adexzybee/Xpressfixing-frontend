@@ -459,13 +459,9 @@ function saveStore() {
 
 async function updateEngineer(id, updates) {
   try {
-    const userData = JSON.parse(localStorage.getItem('xpressfixing_current_user'));
     const res = await fetch(`${API_URL}/engineers/${id}`, { 
       method: 'PUT', 
-      headers: { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${userData.token}`
-      }, 
+      headers: { 'Content-Type': 'application/json' }, 
       body: JSON.stringify(updates) 
     });
     const data = await res.json();
@@ -473,7 +469,7 @@ async function updateEngineer(id, updates) {
       await loadData(); 
       showToast('Engineer updated'); 
     } else {
-      showToast(data.message || 'Update failed', true);
+      showToast(data.message || data.error || 'Update failed', true);
     }
   } catch (error) { 
     console.error('Error:', error);
@@ -483,19 +479,15 @@ async function updateEngineer(id, updates) {
 
 async function deleteEngineer(id) {
   try {
-    const userData = JSON.parse(localStorage.getItem('xpressfixing_current_user'));
     const res = await fetch(`${API_URL}/engineers/${id}`, { 
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${userData.token}`
-      }
+      method: 'DELETE'
     });
     const data = await res.json();
     if (data.success) { 
       await loadData(); 
       showToast('Engineer banned'); 
     } else {
-      showToast(data.message || 'Ban failed', true);
+      showToast(data.message || data.error || 'Ban failed', true);
     }
   } catch (error) { 
     showToast('Ban failed', true); 
@@ -506,13 +498,9 @@ async function updateBookingStatus() {
   if (currentBooking) {
     const newStatus = document.getElementById('booking-status-update').value;
     try {
-      const userData = JSON.parse(localStorage.getItem('xpressfixing_current_user'));
       const res = await fetch(`${API_URL}/bookings/${currentBooking.id}`, { 
         method: 'PUT', 
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${userData.token}`
-        }, 
+        headers: { 'Content-Type': 'application/json' }, 
         body: JSON.stringify({ status: newStatus }) 
       });
       const data = await res.json();
@@ -521,7 +509,7 @@ async function updateBookingStatus() {
         closeModal('booking-modal'); 
         showToast('Booking updated'); 
       } else {
-        showToast(data.message || 'Update failed', true);
+        showToast(data.message || data.error || 'Update failed', true);
       }
     } catch (error) { 
       showToast('Update failed', true); 

@@ -474,24 +474,25 @@ async function submitQuote() {
   if (currentJobForQuote) {
     try {
       const newStatus = currentJobForQuote.status === 'pending_engineer' ? 'negotiating' : currentJobForQuote.status;
-      const userData = JSON.parse(localStorage.getItem('xpressfixing_current_user'));
+      
       const response = await fetch(`${API_URL}/bookings/${currentJobForQuote.id}`, {
         method: 'PUT',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${userData.token}`
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ amount: amount, status: newStatus })
       });
+      
       const data = await response.json();
-      if (data.success) {
+      if (response.ok && data.success) {
         closeModal('quote-modal');
         await loadMyJobs();
         showToast(`Quote of ${formatCurrency(amount)} sent to customer`);
       } else {
-        showToast(data.message || 'Failed to send quote', true);
+        showToast(data.message || data.error || 'Failed to send quote', true);
       }
-    } catch (error) { showToast('Failed to send quote', true); }
+    } catch (error) { 
+      console.error('Error:', error);
+      showToast('Failed to send quote', true); 
+    }
   }
 }
 
