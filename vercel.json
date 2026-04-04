@@ -1,10 +1,5 @@
 {
   "rewrites": [
-    { "source": "/", "destination": "/public/index.html" },
-    { "source": "/engineer-app/:path*", "destination": "/engineer-app/:path*" },
-    { "source": "/customer-app/:path*", "destination": "/customer-app/:path*" },
-    { "source": "/admin-app/:path*", "destination": "/admin-app/:path*" },
-    { "source": "/dispatch-app/:path*", "destination": "/dispatch-app/:path*" },
-    { "source": "/public/:path*", "destination": "/public/:path*" }
+    { "source": "/", "destination": "/public/index.html" }
   ]
 }
