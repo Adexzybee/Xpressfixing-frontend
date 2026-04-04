@@ -3,19 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-<title>Sign In — Xpressfixing</title>
+<title>Customer Login — Xpressfixing</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
 <style>
 :root {
-  --bg: #07070b;
-  --surface: #0f1117;
-  --card: #151824;
-  --border: #262a3d;
+  --bg: #0d0d14;
+  --surface: #13131e;
+  --card: #1a1a28;
+  --border: #272738;
   --accent: #00ffa6;
   --accent-2: #00cfff;
   --accent-soft: rgba(0,255,166,0.12);
-  --text: #f5f7ff;
-  --muted: #9aa0c3;
+  --text: #f0f0fa;
+  --muted: #6b6b8f;
   --danger: #ff6b6b;
   --success: #00d4aa;
 }
@@ -27,7 +27,7 @@
 }
 
 body {
-  background: linear-gradient(135deg, #07070b 0%, #0f1117 100%);
+  background: linear-gradient(135deg, #0d0d14 0%, #13131e 100%);
   color: var(--text);
   font-family: 'DM Sans', sans-serif;
   min-height: 100vh;
@@ -73,6 +73,17 @@ body {
   font-size: 0.8rem;
   color: var(--muted);
   margin-top: 4px;
+}
+
+.brand-badge {
+  background: var(--accent-soft);
+  border: 1px solid rgba(0,255,166,0.2);
+  border-radius: 100px;
+  padding: 6px 14px;
+  font-size: 0.7rem;
+  color: var(--accent);
+  display: inline-block;
+  margin-bottom: 20px;
 }
 
 .auth-card {
@@ -213,10 +224,6 @@ input:focus {
   text-decoration: none;
 }
 
-.forgot-password a:hover {
-  color: var(--accent);
-}
-
 @media (max-width: 480px) {
   .auth-card {
     padding: 24px;
@@ -230,10 +237,14 @@ input:focus {
   
   <div class="logo">
     xpress<span>fixing</span>
-    <div class="logo-sub">Welcome back</div>
+    <div class="logo-sub">Customer Portal</div>
   </div>
 
   <div class="auth-card">
+    <div style="text-align: center;">
+      <div class="brand-badge">👤 Customer Sign In</div>
+    </div>
+    
     <div id="login-error" class="error-message"></div>
     
     <div class="input-group">
@@ -250,13 +261,13 @@ input:focus {
       <a href="#">Forgot Password?</a>
     </div>
     
-    <button class="btn-primary" onclick="handleLogin()">Sign In →</button>
+    <button class="btn-primary" onclick="handleLogin()">Access Dashboard →</button>
     
     <div class="divider">
       <span>New to Xpressfixing?</span>
     </div>
     
-    <a href="signup.html" class="btn-secondary">Create Account</a>
+    <a href="register.html" class="btn-secondary">Create Account →</a>
   </div>
 </div>
 
@@ -271,7 +282,7 @@ function showError(message) {
   errorDiv.style.display = 'block';
   setTimeout(() => {
     errorDiv.style.display = 'none';
-  }, 3000);
+  }, 4000);
 }
 
 function showToast(message) {
@@ -293,7 +304,7 @@ async function handleLogin() {
   }
   
   try {
-    console.log('🔄 Sending login request...');
+    console.log('🔄 Sending customer login request...');
     
     const response = await fetch(`${API_URL}/auth/login`, {
       method: 'POST',
@@ -311,8 +322,23 @@ async function handleLogin() {
         return;
       }
       
-      // Save user to localStorage
-      localStorage.setItem('xpressfixing_current_user', JSON.stringify(data.user));
+      // Check if account is active
+      if (data.user.status === 'suspended') {
+        showError('Your account has been suspended. Please contact support.');
+        return;
+      }
+      
+      // ✅ IMPORTANT: Save user data WITH the JWT token
+      const userData = {
+        id: data.user.id,
+        name: data.user.name,
+        email: data.user.email,
+        role: data.user.role,
+        status: data.user.status,
+        token: data.token  // ← JWT TOKEN - CRITICAL FOR AUTHENTICATION
+      };
+      
+      localStorage.setItem('xpressfixing_current_user', JSON.stringify(userData));
       showToast(`Welcome back, ${data.user.name}!`);
       
       setTimeout(() => {
@@ -323,11 +349,11 @@ async function handleLogin() {
     }
   } catch (error) {
     console.error('❌ Error:', error);
-    showError('Cannot connect to server. Make sure backend is running on port 3000');
+    showError('Cannot connect to server. Make sure backend is running.');
   }
 }
 
-// Demo account helper (optional)
+// Demo account helper
 function autoFillDemo() {
   document.getElementById('login-email').value = 'customer@xpressfixing.com';
   document.getElementById('login-password').value = 'demo123';
@@ -336,7 +362,7 @@ function autoFillDemo() {
 // Add demo hint
 const demoHint = document.createElement('div');
 demoHint.style.cssText = 'text-align: center; margin-top: 16px; color: var(--muted); font-size: 0.75rem; cursor: pointer;';
-demoHint.innerHTML = '🔑 Demo: <span onclick="autoFillDemo()">customer@xpressfixing.com / demo123</span>';
+demoHint.innerHTML = '👤 Demo: <span onclick="autoFillDemo()">customer@xpressfixing.com / demo123</span>';
 document.querySelector('.container').appendChild(demoHint);
 </script>
 </body>
