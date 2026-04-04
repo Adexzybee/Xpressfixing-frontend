@@ -1,7 +1,22 @@
 {
-  "cleanUrls": false,
-  "trailingSlash": false,
   "rewrites": [
-    { "source": "/", "destination": "/public/index.html" }
+    { "source": "/", "destination": "/public/index.html" },
+
+    { "source": "/about", "destination": "/public/about.html" },
+    { "source": "/contact", "destination": "/public/contact.html" },
+    { "source": "/services", "destination": "/public/services.html" },
+
+    { "source": "/admin", "destination": "/admin-app/login.html" },
+    { "source": "/admin/dashboard", "destination": "/admin-app/dashboard.html" },
+
+    { "source": "/customer", "destination": "/customer-app/login.html" },
+    { "source": "/customer/signup", "destination": "/customer-app/signup.html" },
+    { "source": "/customer/dashboard", "destination": "/customer-app/dashboard.html" },
+
+    { "source": "/engineer", "destination": "/engineer-app/login.html" },
+    { "source": "/engineer/dashboard", "destination": "/engineer-app/dashboard.html" },
+    { "source": "/engineer/apply", "destination": "/engineer-app/apply.html" },
+
+    { "source": "/dispatch/dashboard", "destination": "/dispatch-app/dashboard.html" }
   ]
 }
