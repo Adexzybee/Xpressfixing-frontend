@@ -581,69 +581,79 @@ function renderCustomers() {
 }
 
 function renderEngineers() {
-  console.log('Rendering engineers, count:', store.engineers.length);
+  const filter = document.getElementById('engineer-filter')?.value || 'all';
+  let filtered = store.engineers;
+  if (filter !== 'all') filtered = filtered.filter(e => e.status === filter);
   
+  const engineerCount = document.getElementById('engineer-count');
   const tableBody = document.getElementById('engineers-table-body');
+  
+  if (engineerCount) engineerCount.textContent = `${filtered.length} engineers (${store.engineers.filter(e => e.status === 'pending').length} pending)`;
+  
   if (!tableBody) {
-    console.error('Table body not found');
+    console.error('engineers-table-body not found');
     return;
   }
   
-  if (store.engineers.length === 0) {
-    tableBody.innerHTML = '<tr><td colspan="8" style="text-align:center">No engineers found</td></tr>';
+  if (!filtered || filtered.length === 0) {
+    tableBody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:40px;">No engineers found</td></tr>';
     return;
   }
   
   let html = '';
-  for (let i = 0; i < store.engineers.length; i++) {
-    const e = store.engineers[i];
-    html += `<tr>
-      <td><div><strong>${escapeHtml(e.name)}</strong><br><small>${escapeHtml(e.email)}</small></div></td>
-      <td>${escapeHtml(e.speciality || '—')}</td>
-      <td>${escapeHtml(e.location || '—')}</td>
-      <td>${e.jobsCompleted || 0}</td>
-      <td>${e.rating || '—'}</td>
-      <td>${formatCurrency(e.earnings || 0)}</td>
-      <td><span class="pill ${getStatusClass(e.status)}">${getStatusLabel(e.status)}</span></td>
-      <td>
-        <button class="btn btn-ghost btn-sm" onclick="viewEngineer(${e.id})">View</button>
-        ${e.status === 'pending' ? `<button class="btn btn-success-ghost btn-sm" onclick="approveEngineer(${e.id})">Approve</button>` : ''}
-        ${e.status === 'active' ? `<button class="btn btn-danger-ghost btn-sm" onclick="suspendEngineer(${e.id})">Suspend</button>` : ''}
-        ${e.status === 'suspended' ? `<button class="btn btn-success-ghost btn-sm" onclick="activateEngineer(${e.id})">Activate</button>` : ''}
-        <button class="btn btn-danger-ghost btn-sm" onclick="banEngineer(${e.id})">Ban</button>
-      </td>
-    `;
+  for (let i = 0; i < filtered.length; i++) {
+    const e = filtered[i];
+    html += '<tr>' +
+      '<td><div class="cell-user"><div class="cell-ava">🔧</div><div><div class="td-name">' + escapeHtml(e.name) + '</div><div class="td-sub">' + escapeHtml(e.email) + '</div></div></div></td>' +
+      '<td>' + escapeHtml(e.speciality || '—') + '</td>' +
+      '<td>' + escapeHtml(e.location || '—') + '</td>' +
+      '<td class="td-mono">' + (e.jobsCompleted || 0) + '</td>' +
+      '<td>' + (e.rating > 0 ? '⭐ ' + e.rating : '—') + '</td>' +
+      '<td class="td-mono">' + formatCurrency(e.earnings || 0) + '</td>' +
+      '<td><span class="pill ' + getStatusClass(e.status) + '">' + getStatusLabel(e.status) + '</span></td>' +
+      '<td><div class="arow"><button class="btn btn-ghost btn-sm" onclick="viewEngineer(' + e.id + ')">View</button>' + 
+      (e.status === 'pending' ? '<button class="btn btn-success-ghost btn-sm" onclick="approveEngineer(' + e.id + ')">Approve</button>' : '') +
+      (e.status === 'active' ? '<button class="btn btn-danger-ghost btn-sm" onclick="suspendEngineer(' + e.id + ')">Suspend</button>' : '') +
+      (e.status === 'suspended' ? '<button class="btn btn-success-ghost btn-sm" onclick="activateEngineer(' + e.id + ')">Activate</button>' : '') +
+      '<button class="btn btn-danger-ghost btn-sm" onclick="banEngineer(' + e.id + ')">Ban</button></div></td>' +
+      '</tr>';
   }
   tableBody.innerHTML = html;
 }
 
 function renderBookings() {
-  console.log('Rendering bookings, count:', store.bookings.length);
+  const filter = document.getElementById('booking-filter')?.value || 'all';
+  let filtered = store.bookings;
+  if (filter !== 'all') filtered = filtered.filter(b => b.status === filter);
   
+  const bookingCount = document.getElementById('booking-count');
   const tableBody = document.getElementById('bookings-table-body');
+  
+  if (bookingCount) bookingCount.textContent = filtered.length + ' total bookings';
+  
   if (!tableBody) {
-    console.error('Table body not found');
+    console.error('bookings-table-body not found');
     return;
   }
   
-  if (store.bookings.length === 0) {
-    tableBody.innerHTML = '<tr><td colspan="8" style="text-align:center">No bookings found</td></tr>';
+  if (!filtered || filtered.length === 0) {
+    tableBody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:40px;">No bookings found</td></tr>';
     return;
   }
   
   let html = '';
-  for (let i = 0; i < store.bookings.length; i++) {
-    const b = store.bookings[i];
-    html += `<tr>
-      <td class="td-mono">${b.id}</td>
-      <td>${escapeHtml(b.customerName)}</td>
-      <td>${escapeHtml(b.device)}</td>
-      <td>${escapeHtml(b.engineerName || 'Not assigned')}</td>
-      <td><span class="pill ${getStatusClass(b.status)}">${getStatusLabel(b.status)}</span></td>
-      <td>${formatCurrency(b.amount || 0)}</td>
-      <td>${formatDate(b.createdAt)}</td>
-      <td><button class="btn btn-ghost btn-sm" onclick="viewBooking('${b.id}')">View</button></td>
-    `;
+  for (let i = 0; i < filtered.length; i++) {
+    const b = filtered[i];
+    html += '<tr>' +
+      '<td class="td-mono">' + b.id + '</td>' +
+      '<td>' + escapeHtml(b.customerName) + '</td>' +
+      '<td>' + escapeHtml(b.device) + '</td>' +
+      '<td>' + escapeHtml(b.engineerName || 'Not assigned') + '</td>' +
+      '<td><span class="pill ' + getStatusClass(b.status) + '">' + getStatusLabel(b.status) + '</span></td>' +
+      '<td class="td-mono">' + formatCurrency(b.amount || 0) + '</td>' +
+      '<td>' + formatDate(b.createdAt) + '</td>' +
+      '<td><button class="btn btn-ghost btn-sm" onclick="viewBooking(\'' + b.id + '\')">View</button></td>' +
+      '</tr>';
   }
   tableBody.innerHTML = html;
 }
