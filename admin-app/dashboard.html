@@ -337,18 +337,87 @@ tr:hover td { background: rgba(255,255,255,0.02); }
       </div>
 
       <!-- Engineers Page -->
-      <div class="page" id="page-engineers">
-        <div class="ph"><div><div class="ph-title">Engineers</div><div class="ph-sub" id="engineer-count">0 engineers</div></div><div style="display: flex; gap: 12px;"><button class="btn btn-ghost" onclick="loadData()">🔄 Refresh</button><button class="btn btn-ghost" onclick="showBannedEngineers()">🚫 View Banned</button></div></div>
-        <div class="tcard"><div class="tcard-hdr"><div class="tcard-title">All Engineers</div><select class="fsel" id="engineer-filter" onchange="filterEngineers()"><option value="all">All</option><option value="active">Active</option><option value="pending">Pending</option><option value="suspended">Suspended</option></select></div>
-        <div class="dtable-wrap"></table><thead><tr><th>Engineer</th><th>Speciality</th><th>Location</th><th>Jobs</th><th>Rating</th><th>Earnings</th><th>Status</th><th>Action</th></tr></thead><tbody id="engineers-table-body"></tbody></table></div></div>
-      </div>
+   <!-- Engineers Page -->
+<div class="page" id="page-engineers">
+  <div class="ph">
+    <div>
+      <div class="ph-title">Engineers</div>
+      <div class="ph-sub" id="engineer-count">0 engineers</div>
+    </div>
+    <div style="display: flex; gap: 12px;">
+      <button class="btn btn-ghost" onclick="loadData()">🔄 Refresh</button>
+      <button class="btn btn-ghost" onclick="showBannedEngineers()">🚫 View Banned</button>
+    </div>
+  </div>
+  <div class="tcard">
+    <div class="tcard-hdr">
+      <div class="tcard-title">All Engineers</div>
+      <select class="fsel" id="engineer-filter" onchange="filterEngineers()">
+        <option value="all">All</option>
+        <option value="active">Active</option>
+        <option value="pending">Pending</option>
+        <option value="suspended">Suspended</option>
+      </select>
+    </div>
+    <div class="dtable-wrap">
+      <table style="width: 100%;">
+        <thead>
+          <tr>
+            <th>Engineer</th>
+            <th>Speciality</th>
+            <th>Location</th>
+            <th>Jobs</th>
+            <th>Rating</th>
+            <th>Earnings</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="engineers-table-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
 
       <!-- Bookings Page -->
-      <div class="page" id="page-bookings">
-        <div class="ph"><div><div class="ph-title">All Bookings</div><div class="ph-sub" id="booking-count">0 total bookings</div></div><button class="btn btn-ghost" onclick="loadData()">🔄 Refresh</button></div>
-        <div class="tcard"><div class="tcard-hdr"><div class="tcard-title">Booking Log</div><select class="fsel" id="booking-filter" onchange="filterBookings()"><option value="all">All</option><option value="pending">Pending</option><option value="inrepair">In Repair</option><option value="completed">Completed</option></select></div>
-        <div class="dtable-wrap"><tr><thead><tr><th>ID</th><th>Customer</th><th>Device</th><th>Engineer</th><th>Status</th><th>Amount</th><th>Date</th><th>Action</th></tr></thead><tbody id="bookings-table-body"></tbody></table></div></div>
-      </div>
+      <!-- Bookings Page -->
+<div class="page" id="page-bookings">
+  <div class="ph">
+    <div>
+      <div class="ph-title">All Bookings</div>
+      <div class="ph-sub" id="booking-count">0 total bookings</div>
+    </div>
+    <button class="btn btn-ghost" onclick="loadData()">🔄 Refresh</button>
+  </div>
+  <div class="tcard">
+    <div class="tcard-hdr">
+      <div class="tcard-title">All Bookings</div>
+      <select class="fsel" id="booking-filter" onchange="filterBookings()">
+        <option value="all">All</option>
+        <option value="pending_engineer">Pending</option>
+        <option value="inrepair">In Repair</option>
+        <option value="completed">Completed</option>
+      </select>
+    </div>
+    <div class="dtable-wrap">
+      <table style="width: 100%;">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Customer</th>
+            <th>Device</th>
+            <th>Engineer</th>
+            <th>Status</th>
+            <th>Amount</th>
+            <th>Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="bookings-table-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
 
       <!-- Payments Page -->
       <div class="page" id="page-payments">
