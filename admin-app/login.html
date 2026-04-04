@@ -212,24 +212,7 @@ input:focus {
 <div id="toast" class="toast"></div>
 
 <script>
-
-let users = JSON.parse(localStorage.getItem('xpressfixing_users')) || [];
-
-const demoAdmin = {
-  id: 3,
-  name: 'Super Admin',
-  email: 'admin@xpressfixing.com',
-  password: 'demo123',
-  role: 'admin',
-  twoFactorCode: '123456',
-  createdAt: new Date().toISOString(),
-  lastLogin: null
-};
-
-if (!users.find(u => u.email === demoAdmin.email)) {
-  users.push(demoAdmin);
-}
-localStorage.setItem('xpressfixing_users', JSON.stringify(users));
+const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:3000/api' : 'https://xpressfixing-backend-production.up.railway.app/api';
 
 function showError(message) {
   const errorDiv = document.getElementById('login-error');
@@ -249,7 +232,7 @@ function showToast(message) {
   }, 3000);
 }
 
-function handleAdminLogin() {
+async function handleAdminLogin() {
   const email = document.getElementById('admin-email').value.trim();
   const password = document.getElementById('admin-password').value;
   const twoFactor = document.getElementById('admin-2fa').value;
@@ -259,32 +242,60 @@ function handleAdminLogin() {
     return;
   }
   
-  const user = users.find(u => u.email === email && u.password === password);
-  
-  if (!user) {
-    showError('Invalid credentials');
-    return;
-  }
-  
-  if (user.role !== 'admin') {
-    showError('Access denied. Admin privileges required.');
-    return;
-  }
-  
+  // Verify 2FA code
   if (twoFactor !== '123456') {
     showError('Invalid 2FA code. Demo code: 123456');
     return;
   }
   
-  user.lastLogin = new Date().toISOString();
-  localStorage.setItem('xpressfixing_users', JSON.stringify(users));
-  localStorage.setItem('xpressfixing_current_user', JSON.stringify(user));
-  
-  showToast('2FA verified. Access granted!');
-  
-  setTimeout(() => {
-    window.location.href = 'dashboard.html';
-  }, 1000);
+  try {
+    console.log('🔄 Sending admin login request...');
+    
+    const response = await fetch(`${API_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    
+    const data = await response.json();
+    console.log('📥 Response:', data);
+    
+    if (data.success) {
+      // Check if user is admin
+      if (data.user.role !== 'admin') {
+        showError('Access denied. Admin privileges required.');
+        return;
+      }
+      
+      // Check if account is active
+      if (data.user.status === 'suspended') {
+        showError('Your account has been suspended. Please contact support.');
+        return;
+      }
+      
+      // 🔐 Save user data WITH the token
+      const userData = {
+        id: data.user.id,
+        name: data.user.name,
+        email: data.user.email,
+        role: data.user.role,
+        status: data.user.status,
+        token: data.token  // ← JWT TOKEN
+      };
+      
+      localStorage.setItem('xpressfixing_current_user', JSON.stringify(userData));
+      showToast('2FA verified. Access granted!');
+      
+      setTimeout(() => {
+        window.location.href = 'dashboard.html';
+      }, 1000);
+    } else {
+      showError(data.error || 'Invalid email or password');
+    }
+  } catch (error) {
+    console.error('❌ Error:', error);
+    showError('Cannot connect to server. Please try again.');
+  }
 }
 
 function autoFillDemo() {

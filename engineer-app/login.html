@@ -333,8 +333,17 @@ async function handleLogin() {
         return;
       }
       
-      // Save user to localStorage
-      localStorage.setItem('xpressfixing_current_user', JSON.stringify(data.user));
+      // 🔐 IMPORTANT: Save user data WITH the token
+      const userData = {
+        id: data.user.id,
+        name: data.user.name,
+        email: data.user.email,
+        role: data.user.role,
+        status: data.user.status,
+        token: data.token  // ← THIS IS THE KEY ADDITION
+      };
+      
+      localStorage.setItem('xpressfixing_current_user', JSON.stringify(userData));
       showToast(`Welcome back, ${data.user.name}!`);
       
       setTimeout(() => {

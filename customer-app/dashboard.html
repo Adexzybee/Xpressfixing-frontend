@@ -501,6 +501,21 @@ let selectedEngineerId = null;
 let currentChatBooking = null;
 let chatRefreshInterval = null;
 
+// ===== HELPER FUNCTION FOR AUTH HEADERS =====
+function getAuthHeaders() {
+  const userData = localStorage.getItem('xpressfixing_current_user');
+  if (userData) {
+    const user = JSON.parse(userData);
+    if (user.token) {
+      return {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${user.token}`
+      };
+    }
+  }
+  return { 'Content-Type': 'application/json' };
+}
+
 // ===== AUTHENTICATION =====
 function checkAuth() {
   const user = localStorage.getItem('xpressfixing_current_user');
@@ -518,7 +533,6 @@ function logout() {
 // ===== HELPERS =====
 function formatCurrency(amount) { return `₦${amount.toLocaleString()}`; }
 function formatDate(dateString) { return new Date(dateString).toLocaleDateString('en-NG', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); }
-// Helper function to display star rating
 function getStarRating(rating) {
   const fullStars = Math.floor(rating);
   const halfStar = rating % 1 >= 0.5;
@@ -540,7 +554,7 @@ function getStatusClass(status) {
     'payment_completed': 'status-payment_completed',
     'dispatch_assigned': 'status-dispatch_pickup',
     'with_engineer': 'status-with_engineer',
-    'inrepair': 'status-inrepair',  // ← ADD THIS
+    'inrepair': 'status-inrepair',
     'dispatch_return': 'status-dispatch_return',
     'completed': 'status-completed'
   };
@@ -556,7 +570,7 @@ function getStatusLabel(status) {
     'payment_completed': 'Payment Confirmed',
     'dispatch_assigned': 'Dispatch Assigned',
     'with_engineer': 'With Engineer',
-    'inrepair': '🔧 In Repair',  
+    'inrepair': '🔧 In Repair',
     'dispatch_return': 'Returning to You',
     'completed': 'Completed'
   };
@@ -621,7 +635,9 @@ async function showEngineerSelection() {
   
   try {
     showToast('Loading available engineers...');
-    const response = await fetch(`${API_URL}/engineers`);
+    const response = await fetch(`${API_URL}/engineers`, {
+      headers: getAuthHeaders()
+    });
     let engineers = await response.json();
     
     engineers = engineers.filter(e => e.status === 'active');
@@ -661,10 +677,10 @@ function renderEngineerList() {
         <div class="engineer-info">
           <h3>${escapeHtml(eng.name)}</h3>
           <div class="engineer-speciality">${escapeHtml(eng.speciality || 'General Repairs')}</div>
-         <div class="engineer-rating" onclick="viewEngineerReviews(${eng.id})" style="cursor: pointer;">
-  ${getStarRating(eng.rating)} ${eng.rating} (${eng.jobsCompleted || 0} reviews)
-  <span style="font-size: 0.65rem; opacity: 0.7;">📖 click</span>
-</div>
+          <div class="engineer-rating" onclick="viewEngineerReviews(${eng.id})" style="cursor: pointer;">
+            ${getStarRating(eng.rating)} ${eng.rating} (${eng.jobsCompleted || 0} reviews)
+            <span style="font-size: 0.65rem; opacity: 0.7;">📖 click</span>
+          </div>
         </div>
       </div>
       <div class="engineer-stats">
@@ -720,7 +736,7 @@ async function confirmBooking() {
     showToast('Submitting your booking...');
     const response = await fetch(`${API_URL}/bookings`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       body: JSON.stringify(bookingData)
     });
     const data = await response.json();
@@ -749,7 +765,9 @@ async function confirmBooking() {
 // ===== LOAD BOOKINGS =====
 async function loadMyBookings() {
   try {
-    const response = await fetch(`${API_URL}/bookings/customer/${currentUser.id}`);
+    const response = await fetch(`${API_URL}/bookings/customer/${currentUser.id}`, {
+      headers: getAuthHeaders()
+    });
     store.bookings = await response.json();
     updateStats();
     renderBookings();
@@ -877,10 +895,9 @@ async function submitRating() {
   }
   
   try {
-    // Update booking to completed with rating
     const response = await fetch(`${API_URL}/bookings/${currentCompleteBooking.id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       body: JSON.stringify({ 
         status: 'completed',
         customerRating: selectedRating,
@@ -890,10 +907,9 @@ async function submitRating() {
     
     if (!response.ok) throw new Error('Failed to update booking');
     
-    // Optionally update customer's total spent (you can keep this)
     const customerUpdate = await fetch(`${API_URL}/customers/${currentUser.id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       body: JSON.stringify({ 
         totalSpent: (currentUser.totalSpent || 0) + currentCompleteBooking.amount,
         bookingsCount: (currentUser.bookingsCount || 0) + 1
@@ -927,7 +943,6 @@ async function viewPriceQuote(bookingId) {
     `;
     document.getElementById('quote-amount').textContent = formatCurrency(booking.amount);
     
-    // Check if there's a pending counter offer from customer
     if (booking.counterAmount) {
       document.getElementById('counter-offer-section').style.display = 'block';
       document.getElementById('counter-amount').value = booking.counterAmount;
@@ -962,19 +977,18 @@ async function sendCounterOffer() {
   try {
     const response = await fetch(`${API_URL}/bookings/${currentQuoteBooking.id}/counter-offer`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       body: JSON.stringify({ counterAmount })
     });
     const data = await response.json();
     if (data.success) {
       closeModal('quote-modal');
       showToast(`Counter offer of ${formatCurrency(counterAmount)} sent to engineer. They will respond shortly.`);
-      loadMyBookings(); // Refresh to update status
+      loadMyBookings();
       
-      // Send a chat message notification to engineer
       await fetch(`${API_URL}/chats`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify({
           bookingId: currentQuoteBooking.id,
           sender: 'customer',
@@ -993,7 +1007,7 @@ async function acceptPrice() {
   try {
     const response = await fetch(`${API_URL}/bookings/${currentQuoteBooking.id}/accept-price`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' }
+      headers: getAuthHeaders()
     });
     const data = await response.json();
     if (data.success) {
@@ -1034,8 +1048,6 @@ function proceedToPaymentFromBooking(bookingId) {
   if (booking) {
     currentQuoteBooking = booking;
     selectedDelivery = booking.deliveryMethod || 'dispatch';
-    
-    // Open payment modal directly - backend handles status validation
     openPaymentModal();
   }
 }
@@ -1126,7 +1138,7 @@ async function processPayment() {
       if (isSuccess) {
         const response = await fetch(`${API_URL}/bookings/${currentPaymentBooking.id}`, {
           method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
+          headers: getAuthHeaders(),
           body: JSON.stringify({ 
             status: 'payment_completed',
             deliveryMethod: selectedDelivery,
@@ -1150,7 +1162,7 @@ async function processPayment() {
       } else {
         const response = await fetch(`${API_URL}/bookings/${currentPaymentBooking.id}`, {
           method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
+          headers: getAuthHeaders(),
           body: JSON.stringify({ 
             status: 'payment_failed',
             paymentAttempts: paymentAttempts,
@@ -1195,14 +1207,12 @@ async function openChat(bookingId) {
     currentChatBooking = booking;
     document.getElementById('chat-engineer-name').innerHTML = `Chatting with <strong>${escapeHtml(booking.engineerName)}</strong> about ${escapeHtml(booking.device)}`;
     
-    // Mark messages as read when opening chat
     await fetch(`${API_URL}/chats/${bookingId}/read`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       body: JSON.stringify({ userId: currentUser.id, role: 'customer' })
     });
     
-    // Clear the badge
     const badge = document.getElementById(`unread-badge-${bookingId}`);
     if (badge) badge.style.display = 'none';
     
@@ -1220,13 +1230,11 @@ async function openChat(bookingId) {
 
 async function loadChatMessages(bookingId) {
   try {
-    const response = await fetch(`${API_URL}/chats/${bookingId}?userId=${currentUser.id}&role=customer`);
+    const response = await fetch(`${API_URL}/chats/${bookingId}?userId=${currentUser.id}&role=customer`, {
+      headers: getAuthHeaders()
+    });
     const data = await response.json();
-    
-    // The backend returns { messages: [...], unreadCount: 0 }
-    // So we need to use data.messages, not data directly
-    const messages = data.messages || data; // Fallback for backward compatibility
-    
+    const messages = data.messages || data;
     const chatContainer = document.getElementById('chat-messages');
     
     if (!chatContainer) return;
@@ -1260,7 +1268,7 @@ async function sendChatMessage() {
   try {
     const response = await fetch(`${API_URL}/chats`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       body: JSON.stringify({
         bookingId: currentChatBooking.id,
         sender: 'customer',
@@ -1298,32 +1306,17 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
-// ===== INITIALIZATION =====
-document.addEventListener('DOMContentLoaded', function() {
-  if (!checkAuth()) return;
-  const hour = new Date().getHours();
-  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
-  document.getElementById('welcome-message').innerHTML = `${greeting}, ${currentUser.name.split(' ')[0]}! 👋`;
-  initBookingForm();
-  initRatingStars();
-  loadMyBookings();
-  startUnreadPolling();
-});
-
-document.querySelectorAll('.modal-overlay').forEach(modal => {
-  modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('open'); });
-});
-
 // ===== UNREAD MESSAGE COUNTS =====
 let unreadInterval = null;
 
 async function loadUnreadCounts() {
   try {
-    const response = await fetch(`${API_URL}/chats/unread/${currentUser.id}/customer`);
+    const response = await fetch(`${API_URL}/chats/unread/${currentUser.id}/customer`, {
+      headers: getAuthHeaders()
+    });
     const data = await response.json();
     const unreadCounts = data.unreadCounts;
     
-    // Update badges for each booking
     for (const [bookingId, count] of Object.entries(unreadCounts)) {
       const badge = document.getElementById(`unread-badge-${bookingId}`);
       if (badge) {
@@ -1332,7 +1325,6 @@ async function loadUnreadCounts() {
       }
     }
     
-    // Also update total unread count in navbar (optional)
     const totalUnread = Object.values(unreadCounts).reduce((a, b) => a + b, 0);
     const navbarBadge = document.getElementById('total-unread-badge');
     if (navbarBadge) {
@@ -1348,20 +1340,23 @@ async function loadUnreadCounts() {
   }
 }
 
-// Start polling for unread counts
 function startUnreadPolling() {
   if (unreadInterval) clearInterval(unreadInterval);
   loadUnreadCounts();
-  unreadInterval = setInterval(loadUnreadCounts, 5000); // Check every 5 seconds
+  unreadInterval = setInterval(loadUnreadCounts, 5000);
 }
 
 // ===== VIEW ENGINEER REVIEWS =====
 async function viewEngineerReviews(engineerId) {
   try {
-    const engineerRes = await fetch(`${API_URL}/engineers/${engineerId}`);
+    const engineerRes = await fetch(`${API_URL}/engineers/${engineerId}`, {
+      headers: getAuthHeaders()
+    });
     const engineer = await engineerRes.json();
     
-    const bookingsRes = await fetch(`${API_URL}/bookings`);
+    const bookingsRes = await fetch(`${API_URL}/bookings`, {
+      headers: getAuthHeaders()
+    });
     const allBookings = await bookingsRes.json();
     const engineerReviews = allBookings.filter(b => 
       b.engineerId === engineerId && 
@@ -1404,6 +1399,22 @@ async function viewEngineerReviews(engineerId) {
     showToast('Failed to load reviews', true);
   }
 }
+
+// ===== INITIALIZATION =====
+document.addEventListener('DOMContentLoaded', function() {
+  if (!checkAuth()) return;
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  document.getElementById('welcome-message').innerHTML = `${greeting}, ${currentUser.name.split(' ')[0]}! 👋`;
+  initBookingForm();
+  initRatingStars();
+  loadMyBookings();
+  startUnreadPolling();
+});
+
+document.querySelectorAll('.modal-overlay').forEach(modal => {
+  modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('open'); });
+});
 </script>
 </body>
 </html>

@@ -283,6 +283,21 @@ let currentChatBooking = null;
 let chatRefreshInterval = null;
 let unreadInterval = null;
 
+// Helper function to get auth headers
+function getAuthHeaders() {
+  const userData = localStorage.getItem('xpressfixing_current_user');
+  if (userData) {
+    const user = JSON.parse(userData);
+    if (user.token) {
+      return {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${user.token}`
+      };
+    }
+  }
+  return { 'Content-Type': 'application/json' };
+}
+
 // ===== AUTHENTICATION =====
 function checkAuth() {
   const user = localStorage.getItem('xpressfixing_current_user');
@@ -345,14 +360,17 @@ function closeModal(modalId) { document.getElementById(modalId).classList.remove
 // ===== LOAD ENGINEER'S JOBS =====
 async function loadMyJobs() {
   try {
-    // Get engineer's current data for earnings
-    const engineerResponse = await fetch(`${API_URL}/engineers/${currentUser.id}`);
-    const engineerData = await engineerResponse.json();
+    const response = await fetch(`${API_URL}/engineers/${currentUser.id}`, {
+      headers: getAuthHeaders()
+    });
+    const engineerData = await response.json();
     currentUser.earnings = engineerData.earnings || 0;
     currentUser.jobsCompleted = engineerData.jobsCompleted || 0;
     
-    const response = await fetch(`${API_URL}/bookings/engineer/${currentUser.id}`);
-    store.bookings = await response.json();
+    const bookingsResponse = await fetch(`${API_URL}/bookings/engineer/${currentUser.id}`, {
+      headers: getAuthHeaders()
+    });
+    store.bookings = await bookingsResponse.json();
     updateStats();
     renderJobs();
   } catch (error) {
@@ -477,7 +495,7 @@ async function submitQuote() {
       
       const response = await fetch(`${API_URL}/bookings/${currentJobForQuote.id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify({ amount: amount, status: newStatus })
       });
       
@@ -487,7 +505,7 @@ async function submitQuote() {
         await loadMyJobs();
         showToast(`Quote of ${formatCurrency(amount)} sent to customer`);
       } else {
-        showToast(data.message || data.error || 'Failed to send quote', true);
+        showToast(data.error || data.message || 'Failed to send quote', true);
       }
     } catch (error) { 
       console.error('Error:', error);
@@ -502,13 +520,15 @@ async function startRepair(bookingId) {
     try {
       const response = await fetch(`${API_URL}/bookings/${bookingId}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify({ status: 'inrepair' })
       });
       const data = await response.json();
-      if (data.success) {
+      if (response.ok && data.success) {
         await loadMyJobs();
         showToast('Repair started! Customer has been notified.');
+      } else {
+        showToast(data.error || 'Failed to start repair', true);
       }
     } catch (error) {
       showToast('Failed to start repair', true);
@@ -521,13 +541,15 @@ async function completeRepair(bookingId) {
     try {
       const response = await fetch(`${API_URL}/bookings/${bookingId}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify({ status: 'dispatch_return' })
       });
       const data = await response.json();
-      if (data.success) {
+      if (response.ok && data.success) {
         await loadMyJobs();
         showToast('Repair completed! Device is being returned to customer.');
+      } else {
+        showToast(data.error || 'Failed to complete repair', true);
       }
     } catch (error) {
       showToast('Failed to complete repair', true);
@@ -544,7 +566,7 @@ async function openChat(bookingId) {
     
     await fetch(`${API_URL}/chats/${bookingId}/read`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       body: JSON.stringify({ userId: currentUser.id, role: 'engineer' })
     });
     
@@ -563,7 +585,9 @@ async function openChat(bookingId) {
 
 async function loadChatMessages(bookingId) {
   try {
-    const response = await fetch(`${API_URL}/chats/${bookingId}?userId=${currentUser.id}&role=engineer`);
+    const response = await fetch(`${API_URL}/chats/${bookingId}?userId=${currentUser.id}&role=engineer`, {
+      headers: getAuthHeaders()
+    });
     const data = await response.json();
     const messages = data.messages || data;
     const chatContainer = document.getElementById('chat-messages');
@@ -599,7 +623,7 @@ async function sendChatMessage() {
   try {
     const response = await fetch(`${API_URL}/chats`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       body: JSON.stringify({
         bookingId: currentChatBooking.id,
         sender: 'engineer',
@@ -610,11 +634,11 @@ async function sendChatMessage() {
     });
     
     const data = await response.json();
-    if (data.success) {
+    if (response.ok && data.success) {
       document.getElementById('chat-input').value = '';
       await loadChatMessages(currentChatBooking.id);
     } else {
-      showToast('Failed to send message', true);
+      showToast(data.error || 'Failed to send message', true);
     }
   } catch (error) {
     console.error('Error sending message:', error);
@@ -640,7 +664,9 @@ function escapeHtml(text) {
 // ===== UNREAD MESSAGE COUNTS =====
 async function loadUnreadCounts() {
   try {
-    const response = await fetch(`${API_URL}/chats/unread/${currentUser.id}/engineer`);
+    const response = await fetch(`${API_URL}/chats/unread/${currentUser.id}/engineer`, {
+      headers: getAuthHeaders()
+    });
     const data = await response.json();
     const unreadCounts = data.unreadCounts || {};
     

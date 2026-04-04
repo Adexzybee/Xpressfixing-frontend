@@ -347,7 +347,7 @@ tr:hover td { background: rgba(255,255,255,0.02); }
       <div class="page" id="page-bookings">
         <div class="ph"><div><div class="ph-title">All Bookings</div><div class="ph-sub" id="booking-count">0 total bookings</div></div><button class="btn btn-ghost" onclick="loadData()">🔄 Refresh</button></div>
         <div class="tcard"><div class="tcard-hdr"><div class="tcard-title">Booking Log</div><select class="fsel" id="booking-filter" onchange="filterBookings()"><option value="all">All</option><option value="pending">Pending</option><option value="inrepair">In Repair</option><option value="completed">Completed</option></select></div>
-        <div class="dtable-wrap"><table><thead><tr><th>ID</th><th>Customer</th><th>Device</th><th>Engineer</th><th>Status</th><th>Amount</th><th>Date</th><th>Action</th></tr></thead><tbody id="bookings-table-body"></tbody></table></div></div>
+        <div class="dtable-wrap"></table><thead><tr><th>ID</th><th>Customer</th><th>Device</th><th>Engineer</th><th>Status</th><th>Amount</th><th>Date</th><th>Action</th></tr></thead><tbody id="bookings-table-body"></tbody></table></div></div>
       </div>
 
       <!-- Payments Page -->
@@ -388,9 +388,24 @@ tr:hover td { background: rgba(255,255,255,0.02); }
 
 <script>
 const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:3000/api' : 'https://xpressfixing-backend-production.up.railway.app/api';
-let store = { customers: [], engineers: [], bookings: [], payments: [] };
+let store = { customers: [], engineers: [], bookings: [], payments: [], banned: [] };
 let currentEngineer = null;
 let currentBooking = null;
+
+// Helper function to get auth headers
+function getAuthHeaders() {
+  const userData = localStorage.getItem('xpressfixing_current_user');
+  if (userData) {
+    const user = JSON.parse(userData);
+    if (user.token) {
+      return {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${user.token}`
+      };
+    }
+  }
+  return { 'Content-Type': 'application/json' };
+}
 
 // ===== AUTH =====
 function checkAuth() {
@@ -409,7 +424,7 @@ function formatCurrency(amount) { return `₦${amount.toLocaleString()}`; }
 function formatDate(dateString) { if (!dateString) return '—'; return new Date(dateString).toLocaleDateString('en-NG'); }
 
 function getStatusClass(status) {
-  const classes = { 'active': 'p-active', 'pending': 'p-pending', 'suspended': 'p-suspended', 'completed': 'p-completed', 'inrepair': 'p-active' };
+  const classes = { 'active': 'p-active', 'pending': 'p-pending', 'suspended': 'p-suspended', 'completed': 'p-active', 'inrepair': 'p-active' };
   return classes[status] || 'p-active';
 }
 function getStatusLabel(status) {
@@ -433,13 +448,16 @@ async function loadData() {
   try {
     console.log('🔄 Loading data...');
     const [customersRes, engineersRes, bookingsRes, paymentsRes] = await Promise.all([
-      fetch(`${API_URL}/customers`), fetch(`${API_URL}/engineers`), fetch(`${API_URL}/bookings`), fetch(`${API_URL}/payments`)
+      fetch(`${API_URL}/customers`, { headers: getAuthHeaders() }),
+      fetch(`${API_URL}/engineers`, { headers: getAuthHeaders() }),
+      fetch(`${API_URL}/bookings`, { headers: getAuthHeaders() }),
+      fetch(`${API_URL}/payments`, { headers: getAuthHeaders() })
     ]);
     store.customers = await customersRes.json();
     store.engineers = await engineersRes.json();
     store.bookings = await bookingsRes.json();
     store.payments = await paymentsRes.json();
-     store.banned = store.banned || [];  // Initialize banned array if it doesn't exist
+    store.banned = store.banned || [];
     console.log('✅ Data loaded!', { customers: store.customers.length, engineers: store.engineers.length, bookings: store.bookings.length });
     renderDashboard(); 
     renderCustomers(); 
@@ -453,15 +471,11 @@ async function loadData() {
   }
 }
 
-function saveStore() {
-  localStorage.setItem('xpressfixing_data', JSON.stringify(store));
-}
-
 async function updateEngineer(id, updates) {
   try {
     const res = await fetch(`${API_URL}/engineers/${id}`, { 
       method: 'PUT', 
-      headers: { 'Content-Type': 'application/json' }, 
+      headers: getAuthHeaders(),
       body: JSON.stringify(updates) 
     });
     const data = await res.json();
@@ -469,7 +483,7 @@ async function updateEngineer(id, updates) {
       await loadData(); 
       showToast('Engineer updated'); 
     } else {
-      showToast(data.message || data.error || 'Update failed', true);
+      showToast(data.error || data.message || 'Update failed', true);
     }
   } catch (error) { 
     console.error('Error:', error);
@@ -480,14 +494,15 @@ async function updateEngineer(id, updates) {
 async function deleteEngineer(id) {
   try {
     const res = await fetch(`${API_URL}/engineers/${id}`, { 
-      method: 'DELETE'
+      method: 'DELETE',
+      headers: getAuthHeaders()
     });
     const data = await res.json();
     if (data.success) { 
       await loadData(); 
       showToast('Engineer banned'); 
     } else {
-      showToast(data.message || data.error || 'Ban failed', true);
+      showToast(data.error || data.message || 'Ban failed', true);
     }
   } catch (error) { 
     showToast('Ban failed', true); 
@@ -500,7 +515,7 @@ async function updateBookingStatus() {
     try {
       const res = await fetch(`${API_URL}/bookings/${currentBooking.id}`, { 
         method: 'PUT', 
-        headers: { 'Content-Type': 'application/json' }, 
+        headers: getAuthHeaders(),
         body: JSON.stringify({ status: newStatus }) 
       });
       const data = await res.json();
@@ -509,7 +524,7 @@ async function updateBookingStatus() {
         closeModal('booking-modal'); 
         showToast('Booking updated'); 
       } else {
-        showToast(data.message || data.error || 'Update failed', true);
+        showToast(data.error || data.message || 'Update failed', true);
       }
     } catch (error) { 
       showToast('Update failed', true); 
@@ -527,7 +542,7 @@ function renderDashboard() {
   document.getElementById('date-display').textContent = new Date().toLocaleDateString('en-NG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
   
   const recent = [...store.bookings].slice(-5).reverse();
-  document.getElementById('recent-bookings').innerHTML = recent.length ? `<table><thead><tr><th>ID</th><th>Customer</th><th>Device</th><th>Status</th><th>Amount</th></tr></thead><tbody>${recent.map(b => `<tr><td class="td-mono">${b.id}</td><td>${b.customerName}</td><td>${b.device}</td><td><span class="pill ${getStatusClass(b.status)}">${getStatusLabel(b.status)}</span></td><td>${formatCurrency(b.amount || 0)}</td></tr>`).join('')}</tbody></table>` : '<p style="padding:20px;">No bookings yet</p>';
+  document.getElementById('recent-bookings').innerHTML = recent.length ? `<tr><thead><tr><th>ID</th><th>Customer</th><th>Device</th><th>Status</th><th>Amount</th></thead><tbody>${recent.map(b => `<tr><td class="td-mono">${b.id}</td><td>${b.customerName}</td><td>${b.device}</td><td><span class="pill ${getStatusClass(b.status)}">${getStatusLabel(b.status)}</span></td><td>${formatCurrency(b.amount || 0)}</td></tr>`).join('')}</tbody></table>` : '<p style="padding:20px;">No bookings yet</p>';
 }
 
 function renderCustomers() {
@@ -555,7 +570,7 @@ function renderBookings() {
 }
 
 function renderPayments() {
-  document.getElementById('payments-table-body').innerHTML = store.payments.map(p => `<td><td class="td-mono">${p.id}</td><td>${escapeHtml(p.customerName)}</td><td>${escapeHtml(p.engineerName)}</td><td class="td-mono">${formatCurrency(p.amount)}</td><td style="color:var(--accent);">${formatCurrency(p.commission)}</td><td style="color:var(--success);">${formatCurrency(p.payout)}</td><td><span class="pill ${getStatusClass(p.status)}">${getStatusLabel(p.status)}</span></td><td>${formatDate(p.createdAt)}</td>`).join('');
+  document.getElementById('payments-table-body').innerHTML = store.payments.map(p => `<tr><td class="td-mono">${p.id}</td><td>${escapeHtml(p.customerName)}</td><td>${escapeHtml(p.engineerName)}</td><td class="td-mono">${formatCurrency(p.amount)}</td><td style="color:var(--accent);">${formatCurrency(p.commission)}</td><td style="color:var(--success);">${formatCurrency(p.payout)}</td><td><span class="pill ${getStatusClass(p.status)}">${getStatusLabel(p.status)}</span></td><td>${formatDate(p.createdAt)}</td>`).join('');
 }
 
 // ===== WORKFLOW TRACKING =====
@@ -613,12 +628,9 @@ function renderWorkflowTracking() {
 function viewCustomer(id) { 
   const customer = store.customers.find(c => c.id === id);
   if (customer) {
-    // Get customer's bookings
     const customerBookings = store.bookings.filter(b => b.customerId === customer.id);
     const activeBookings = customerBookings.filter(b => !['completed', 'cancelled'].includes(b.status));
     const completedBookings = customerBookings.filter(b => b.status === 'completed');
-    
-    // Get customer's ratings given
     const ratingsGiven = completedBookings.filter(b => b.customerRating).length;
     const averageRating = completedBookings.reduce((sum, b) => sum + (b.customerRating || 0), 0) / (ratingsGiven || 1);
     
@@ -659,7 +671,6 @@ function viewCustomer(id) {
       </div>
     `;
     
-    // Update the action button
     const actionBtn = document.getElementById('customer-action-btn');
     if (customer.status === 'active') {
       actionBtn.textContent = 'Suspend Customer';
@@ -672,6 +683,7 @@ function viewCustomer(id) {
     openModal('customer-modal');
   }
 }
+
 function viewEngineer(id) { 
   currentEngineer = store.engineers.find(e => e.id === id); 
   if (currentEngineer) { 
@@ -692,7 +704,6 @@ function viewEngineer(id) {
       <div class="det-row"><span class="det-label">Status</span><span class="det-val"><span class="pill ${getStatusClass(currentEngineer.status)}">${getStatusLabel(currentEngineer.status)}</span></span></div>
     `;
     
-    // Update the action button based on status
     const actionBtn = document.getElementById('engineer-action-btn');
     if (currentEngineer.status === 'pending') {
       actionBtn.textContent = 'Approve Engineer';
@@ -708,6 +719,7 @@ function viewEngineer(id) {
     openModal('engineer-modal'); 
   } 
 }
+
 function viewBooking(id) { currentBooking = store.bookings.find(b => b.id === id); if (currentBooking) { document.getElementById('modal-booking-id').textContent = currentBooking.id; document.getElementById('booking-details').innerHTML = `<div class="det-row"><span class="det-label">Customer</span><span class="det-val">${currentBooking.customerName}</span></div><div class="det-row"><span class="det-label">Device</span><span class="det-val">${currentBooking.device}</span></div><div class="det-row"><span class="det-label">Issues</span><span class="det-val">${currentBooking.issues?.join(', ') || '—'}</span></div><div class="det-row"><span class="det-label">Engineer</span><span class="det-val">${currentBooking.engineerName || 'Not assigned'}</span></div><div class="det-row"><span class="det-label">Amount</span><span class="det-val">${formatCurrency(currentBooking.amount || 0)}</span></div>`; document.getElementById('booking-status-update').value = currentBooking.status; openModal('booking-modal'); } }
 
 function approveEngineer(id) { if (confirm('Approve this engineer?')) updateEngineer(id, { status: 'active' }); }
@@ -717,7 +729,6 @@ async function banEngineer(id) {
   if (confirm('⚠️ PERMANENT: Ban this engineer? They will be permanently removed and cannot apply again.')) {
     const engineer = store.engineers.find(e => e.id === id);
     if (engineer) {
-      // Add to banned list
       store.banned = store.banned || [];
       store.banned.push({
         email: engineer.email,
@@ -726,26 +737,22 @@ async function banEngineer(id) {
         reason: 'Banned by admin'
       });
       
-      // Remove from engineers array
       store.engineers = store.engineers.filter(e => e.id !== id);
       
-      // Remove from auth users
       let users = JSON.parse(localStorage.getItem('xpressfixing_users')) || [];
       users = users.filter(u => u.email !== engineer.email);
       localStorage.setItem('xpressfixing_users', JSON.stringify(users));
       
-      saveStore();
-      await loadData();
+      await deleteEngineer(id);
       showToast(`${engineer.name} has been permanently banned.`);
     }
   }
 }
+
 function toggleEngineerStatus() { if (currentEngineer) { if (currentEngineer.status === 'pending') approveEngineer(currentEngineer.id); else if (currentEngineer.status === 'active') suspendEngineer(currentEngineer.id); else if (currentEngineer.status === 'suspended') activateEngineer(currentEngineer.id); closeModal('engineer-modal'); } }
 
 function showBannedEngineers() { 
-  // Get banned engineers from store (not localStorage)
   const banned = store.banned || [];
-  
   const bannedListHtml = banned.length ? banned.map(b => `
     <div class="det-row">
       <div>
@@ -758,19 +765,18 @@ function showBannedEngineers() {
       </div>
     </div>
   `).join('') : '<p style="text-align:center;">No banned engineers</p>';
-  
   document.getElementById('banned-list').innerHTML = bannedListHtml;
   openModal('banned-modal'); 
 }
+
 function unbanEngineer(email) { 
-  // Remove from store.banned array
   if (store.banned) {
     store.banned = store.banned.filter(b => b.email !== email);
-    saveStore(); // Make sure you have a saveStore function
     showBannedEngineers(); 
     showToast('Engineer unbanned');
   }
 }
+
 function exportPayments() { let csv = "ID,Customer,Engineer,Amount,Commission,Payout,Status,Date\n"; store.payments.forEach(p => csv += `${p.id},${p.customerName},${p.engineerName},${p.amount},${p.commission},${p.payout},${p.status},${p.createdAt}\n`); const blob = new Blob([csv], { type: 'text/csv' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'payments.csv'; a.click(); URL.revokeObjectURL(blob.url); showToast('Payments exported'); }
 
 function filterCustomers() { renderCustomers(); }
