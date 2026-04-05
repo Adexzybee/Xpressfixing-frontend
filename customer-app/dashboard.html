@@ -591,6 +591,41 @@ function closeModal(modalId) { document.getElementById(modalId).classList.remove
 function scrollToBookings() {
   document.getElementById('bookings-container').scrollIntoView({ behavior: 'smooth' });
 }
+
+// Add this after your getAuthHeaders() function
+
+// Check if token is still valid
+async function isTokenValid() {
+  const userData = localStorage.getItem('xpressfixing_current_user');
+  if (!userData) return false;
+  
+  const user = JSON.parse(userData);
+  if (!user.token) return false;
+  
+  try {
+    const response = await fetch(`${API_URL}/engineers`, {
+      headers: { 'Authorization': `Bearer ${user.token}` }
+    });
+    
+    if (response.status === 401 || response.status === 403) {
+      return false;
+    }
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+// Handle expired session
+function handleExpiredSession() {
+  showToast('Session expired. Please log in again.', true);
+  setTimeout(() => {
+    localStorage.removeItem('xpressfixing_current_user');
+    window.location.href = 'login.html';
+  }, 2000);
+}
+
+
 // ===== BOOKING FORM =====
 function initBookingForm() {
   document.querySelectorAll('.device-btn').forEach(btn => {
@@ -622,6 +657,13 @@ function showBookingForm() {
 }
 
 async function showEngineerSelection() {
+  // First, check if token is valid
+  const valid = await isTokenValid();
+  if (!valid) {
+    handleExpiredSession();
+    return;
+  }
+  
   if (!selectedDevice) {
     showToast('Please select a device type', true);
     return;
@@ -638,7 +680,20 @@ async function showEngineerSelection() {
     const response = await fetch(`${API_URL}/engineers`, {
       headers: getAuthHeaders()
     });
+    
+    // Check if response is unauthorized
+    if (response.status === 401 || response.status === 403) {
+      handleExpiredSession();
+      return;
+    }
+    
     let engineers = await response.json();
+    
+    if (!Array.isArray(engineers)) {
+      console.error('Engineers is not an array:', engineers);
+      showToast('Error loading engineers', true);
+      return;
+    }
     
     engineers = engineers.filter(e => e.status === 'active');
     
@@ -659,7 +714,7 @@ async function showEngineerSelection() {
     selectedEngineerId = null;
   } catch (error) {
     console.error('Error loading engineers:', error);
-    showToast('Cannot load engineers. Make sure backend is running.', true);
+    showToast('Cannot load engineers. Please refresh the page.', true);
   }
 }
 
@@ -706,6 +761,13 @@ function selectEngineer(engineerId) {
 }
 
 async function confirmBooking() {
+  // Check token validity first
+  const valid = await isTokenValid();
+  if (!valid) {
+    handleExpiredSession();
+    return;
+  }
+  
   if (!selectedEngineerId) {
     showToast('Please select an engineer', true);
     return;
@@ -739,6 +801,13 @@ async function confirmBooking() {
       headers: getAuthHeaders(),
       body: JSON.stringify(bookingData)
     });
+    
+    // Check for unauthorized
+    if (response.status === 401 || response.status === 403) {
+      handleExpiredSession();
+      return;
+    }
+    
     const data = await response.json();
     
     if (data.success) {
