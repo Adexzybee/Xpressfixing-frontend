@@ -1349,46 +1349,43 @@ function startUnreadPolling() {
 // ===== VIEW ENGINEER REVIEWS =====
 async function viewEngineerReviews(engineerId) {
   try {
+    // Get engineer details (now allowed for customers)
     const engineerRes = await fetch(`${API_URL}/engineers/${engineerId}`, {
       headers: getAuthHeaders()
     });
     const engineer = await engineerRes.json();
     
-    const bookingsRes = await fetch(`${API_URL}/bookings`, {
-      headers: getAuthHeaders()
-    });
-    const allBookings = await bookingsRes.json();
-    const engineerReviews = allBookings.filter(b => 
-      b.engineerId === engineerId && 
-      b.status === 'completed' && 
-      b.customerRating
-    );
+    // Get reviews from public endpoint (no auth needed)
+    const reviewsRes = await fetch(`${API_URL}/public/engineer/${engineerId}/reviews`);
+    const reviews = await reviewsRes.json();
     
-    const avgRating = engineerReviews.length > 0 
-      ? (engineerReviews.reduce((sum, r) => sum + r.customerRating, 0) / engineerReviews.length).toFixed(1)
+    const avgRating = reviews.length > 0 
+      ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
       : 0;
     
-    document.getElementById('reviews-engineer-name').innerHTML = `<strong>${engineer.name}</strong>`;
+    document.getElementById('reviews-engineer-name').innerHTML = `<strong>${escapeHtml(engineer.name)}</strong>`;
     document.getElementById('reviews-average-rating').innerHTML = `
       <span style="font-size: 1.2rem; color: var(--warning);">
         ${'★'.repeat(Math.floor(avgRating))}${avgRating % 1 ? '½' : ''}
       </span>
       <span style="font-size: 1.2rem;"> ${avgRating}</span>
-      <span style="color: var(--muted);"> (${engineerReviews.length} reviews)</span>
+      <span style="color: var(--muted);"> (${reviews.length} reviews)</span>
     `;
     
     const reviewsContainer = document.getElementById('reviews-list');
-    if (engineerReviews.length === 0) {
+    if (!reviewsContainer) return;
+    
+    if (reviews.length === 0) {
       reviewsContainer.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--muted);">No reviews yet. Be the first to rate this engineer!</div>';
     } else {
-      reviewsContainer.innerHTML = engineerReviews.map(review => `
+      reviewsContainer.innerHTML = reviews.map(review => `
         <div style="padding: 12px; border-bottom: 1px solid var(--border);">
           <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
             <span style="font-weight: 600;">${escapeHtml(review.customerName)}</span>
-            <span style="color: var(--warning);">${'★'.repeat(review.customerRating)}</span>
+            <span style="color: var(--warning);">${'★'.repeat(review.rating)}</span>
           </div>
-          <div style="color: var(--muted); font-size: 0.8rem;">${escapeHtml(review.customerReview || 'No written review')}</div>
-          <div style="color: var(--muted2); font-size: 0.65rem; margin-top: 4px;">${formatDate(review.createdAt)}</div>
+          <div style="color: var(--muted); font-size: 0.8rem;">${escapeHtml(review.review)}</div>
+          <div style="color: var(--muted2); font-size: 0.65rem; margin-top: 4px;">${formatDate(review.date)}</div>
         </div>
       `).join('');
     }
